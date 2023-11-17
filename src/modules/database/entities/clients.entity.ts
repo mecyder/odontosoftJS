@@ -10,7 +10,7 @@ import {
 import { CustomBaseEntity } from './base.entity';
 import { ClientTypeEnum } from 'src/modules/clients/enums/types';
 import { SexEnum } from 'src/modules/clients/enums/sex';
-import { Appointment } from './index';
+import { Appointment, Doctor } from './index';
 import { Company } from './company.entity';
 
 @Entity()
@@ -65,6 +65,8 @@ export class Clients extends CustomBaseEntity {
   @OneToMany(() => Appointment, (appointment) => appointment.client)
   appointment: Appointment[];
 
+  @ManyToOne(() => Doctor, (doctor) => doctor.patients, { nullable: true })
+  doctor: Doctor;
   @BeforeInsert()
   private setCreateDate(): void {
     this.createAt = new Date();

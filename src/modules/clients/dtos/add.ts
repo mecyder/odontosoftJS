@@ -10,4 +10,5 @@ export interface IAdd {
   Email: string;
   code: string;
   profession: string;
+  doctorId: number;
 }

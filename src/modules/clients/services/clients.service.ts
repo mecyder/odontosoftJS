@@ -7,11 +7,13 @@ import { IEdit, IAdd } from '../dtos';
 import { SexEnum } from '../enums/sex';
 import { CompanyService } from 'src/modules/company/services/company.service';
 import { ICompany } from 'src/modules/company/dtos/company.dto';
+import { DoctorService } from 'src/modules/doctor/service/service.service';
 @Injectable()
 export class ClientsService {
   constructor(
     @Inject('CLIENTS_REPOSITORY') private clientRepository: Repository<Clients>,
     private companyService: CompanyService,
+    private readonly doctorService: DoctorService,
   ) {}
 
   async findAll(): Promise<IResponse<Clients[]>> {
@@ -128,13 +130,25 @@ export class ClientsService {
           },
         ];
       }
-      const COMPANY_DB = await this.companyService.findOneEntity(companyId);
-      if (!COMPANY_DB) {
+      const COMPANY_DB = this.companyService.findOneEntity(companyId);
+      const DOCTOR_DB = this.doctorService.getById(client.doctorId, companyId);
+      const COMPANY_DOCTOR_DB = await Promise.all([COMPANY_DB, DOCTOR_DB]);
+      if ((COMPANY_DOCTOR_DB[0].errors[0].code = 1)) {
         response.errors = [
           {
             code: 401,
-            message: 'Cliente existente',
-            razon: 'Cliente existente',
+            message: 'No Encontrado',
+            razon: 'Consultorio no encontrado',
+          },
+        ];
+      }
+
+      if (COMPANY_DOCTOR_DB[1].total == 0) {
+        response.errors = [
+          {
+            code: 401,
+            message: 'No Encontrado',
+            razon: 'Doctor no encontrado',
           },
         ];
       }
@@ -151,7 +165,9 @@ export class ClientsService {
 
       clientToAdd.createBy = createBy;
       clientToAdd.code = await this.generateCode(client);
-      clientToAdd.company = COMPANY_DB;
+      clientToAdd.company = COMPANY_DOCTOR_DB[0];
+      clientToAdd.doctor =
+        client?.doctorId !== 0 ? COMPANY_DOCTOR_DB[1]?.data : null;
       response.data = await this.clientRepository.save(clientToAdd);
       response.success = true;
     } catch (error) {

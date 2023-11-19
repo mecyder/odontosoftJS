@@ -15,32 +15,32 @@ export class ClientsController {
   constructor(private readonly clientsService: ClientsService) { }
 
   @Get()
-  async findAll() {
-    return this.clientsService.findAll();
+  async findAll(@Headers() header: any) {
+    return this.clientsService.findAll(+header.companyid);
   }
   @Get(':id')
   async findById(@Param() params: any, @Headers() header: any) {
-    return this.clientsService.findById(params.id, header.companyId);
+    return this.clientsService.findById(params.id, header.companyid);
   }
   @Get('/bycode/:code')
-  async getByCode(
-    @Param() params: any,
-    @Headers('companyId') companyId: number,
-  ) {
+  async getByCode(@Param() params: any, @Headers('companyId') header: any) {
     const { code } = params;
-    return this.clientsService.findByCode(code, companyId);
+    return this.clientsService.findByCode(code, header.companyid);
   }
   @Get('/byname/:name')
-  async getByName(@Param() params: any) {
-    return this.clientsService.findByName(params.name);
+  async getByName(@Param() params: any, @Headers() header: any) {
+    return this.clientsService.findByName(params.name, +header.companyid);
   }
   @Get('/byidentification/:identification')
-  async getByIdentification(@Param() params: any) {
-    return this.clientsService.findByIdentification(params.identification);
+  async getByIdentification(@Param() params: any, @Headers() header: any) {
+    return this.clientsService.findByIdentification(
+      params.identification,
+      +header.companyid,
+    );
   }
   @Post()
   async add(@Body() client: IAdd, @Headers() header: any) {
-    return this.clientsService.add(client, header.companyid, header.createby);
+    return this.clientsService.add(client, +header.companyid, header.createby);
   }
   @Put(':id')
   async edit(
@@ -48,6 +48,6 @@ export class ClientsController {
     @Body() client: IEdit,
     @Headers() header: any,
   ) {
-    return this.clientsService.edit(id, client, header.companyId);
+    return this.clientsService.edit(id, client, +header.companyid);
   }
 }

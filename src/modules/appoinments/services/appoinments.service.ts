@@ -1,4 +1,4 @@
-import { Injectable, Inject, HttpStatus } from '@nestjs/common';
+import { Injectable, Inject, HttpStatus, HttpCode } from '@nestjs/common';
 import { Appointment } from 'src/modules/database/entities';
 import { Repository } from 'typeorm';
 import { IADD, IList } from '../dtos';
@@ -7,6 +7,8 @@ import * as moment from 'moment';
 import { ClientsService } from 'src/modules/clients/services/clients.service';
 import { appoimentsStatus } from 'src/shared/enums/appoiments-status.enum';
 import { CompanyService } from 'src/modules/company/services/company.service';
+import { DoctorService } from 'src/modules/doctor/service/service.service';
+import { NOTFOUND } from 'dns';
 
 @Injectable()
 export class AppoinmentsService {
@@ -14,8 +16,9 @@ export class AppoinmentsService {
     @Inject('APPOINMENT_REPOSITORY')
     private appoinmentRepository: Repository<Appointment>,
     private readonly clientService: ClientsService,
-    private readonly companyService: CompanyService
-  ) { }
+    private readonly companyService: CompanyService,
+    private readonly doctorService: DoctorService,
+  ) {}
   async add(appoimentDto: IADD, companyId: number, createBy: number) {
     const response: IResponse<any> = { success: false };
     try {
@@ -45,11 +48,26 @@ export class AppoinmentsService {
         response.errors = [
           {
             code: HttpStatus.NOT_FOUND,
-            message: 'paciente no encontrado',
-            razon: 'este paciente no se encuentra registrado en base de datos',
+            message: 'Paciente no encontrado',
+            razon: 'Este paciente no se encuentra registrado en base de datos',
           },
         ];
       }
+
+      const DOCTOR = await this.doctorService.getById(
+        appoimentDto.doctorId,
+        companyId,
+      );
+      if (!DOCTOR) {
+        response.errors = [
+          {
+            code: HttpStatus.NOT_FOUND,
+            message: 'Doctor no encontrado',
+            razon: 'Este doctor no se encuentra registrado en base de datos',
+          },
+        ];
+      }
+
       const company = await this.companyService.findOneEntity(companyId);
       const duration = moment.duration(1, 'hour');
 
@@ -64,8 +82,9 @@ export class AppoinmentsService {
         reason: appoimentDto.reason,
         status: true,
         start: appoimentDto.date,
-        title: `cita agendada: ${CLIENT.data.name}`,
+        title: `${CLIENT.data.name}`,
         startTime: moment(appoimentDto.hour, 'hh:mm A').format('hh:mm A'),
+        doctor: DOCTOR.data,
         company,
       };
       const appoimentCreate = await this.appoinmentRepository.create(
@@ -103,7 +122,7 @@ export class AppoinmentsService {
 
     try {
       const APPOINMENTS = await this.appoinmentRepository.find({
-        relations: ['client'],
+        relations: ['client', 'doctor'],
         where: {
           company: { id: companyId, status: true },
           appointmentStatus: 0,
@@ -130,6 +149,46 @@ export class AppoinmentsService {
       response.total = APPOINMENT ? 1 : 0;
     } catch (error) {
       throw new Error(error.message);
+    }
+    return response;
+  }
+
+  async updateReservationStatus({
+    id,
+    companyId,
+    statusCode,
+  }): Promise<IResponse<boolean>> {
+    const response: IResponse<boolean> = { success: false };
+    try {
+      const APPOINTMENT_DB = await this.appoinmentRepository.findOne({
+        where: { id, company: { id: companyId } },
+      });
+      if (!APPOINTMENT_DB) {
+        response.errors = [
+          {
+            code: 0,
+            message: 'No Encontrado',
+            razon: 'cita no encontrada',
+          },
+        ];
+        return response;
+      }
+      APPOINTMENT_DB.appointmentStatus = statusCode;
+      const UPDATED = await this.appoinmentRepository.update(
+        id,
+        APPOINTMENT_DB,
+      );
+      response.data = UPDATED.affected > 0;
+      response.success = true;
+    } catch (error) {
+      response.errors = [
+        {
+          code: 0,
+          message: `Ocurrrio un error`,
+          razon: error.message,
+        },
+      ];
+      return response;
     }
     return response;
   }

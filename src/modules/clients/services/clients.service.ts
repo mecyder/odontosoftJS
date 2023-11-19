@@ -14,14 +14,14 @@ export class ClientsService {
     @Inject('CLIENTS_REPOSITORY') private clientRepository: Repository<Clients>,
     private companyService: CompanyService,
     private readonly doctorService: DoctorService,
-  ) {}
+  ) { }
 
-  async findAll(): Promise<IResponse<Clients[]>> {
+  async findAll(companyId: number): Promise<IResponse<Clients[]>> {
     const response: IResponse<Clients[]> = { success: false, data: null };
 
     try {
       const CLIENTS = await this.clientRepository.find({
-        where: { status: true },
+        where: { status: true, company: { id: companyId } },
       });
       response.data = CLIENTS;
       response.success = true;
@@ -54,12 +54,13 @@ export class ClientsService {
 
   async findByIdentification(
     identification: string,
+    companyId: number,
   ): Promise<IResponse<Clients>> {
     const response: IResponse<Clients> = { success: false, data: null };
 
     try {
       const CLIENT = await this.clientRepository.findOne({
-        where: { identification },
+        where: { identification, company: { id: companyId } },
       });
       response.data = CLIENT;
       response.success = true;
@@ -70,12 +71,15 @@ export class ClientsService {
     return response;
   }
 
-  async findByName(name: string): Promise<IResponse<Clients>> {
+  async findByName(
+    name: string,
+    companyId: number,
+  ): Promise<IResponse<Clients>> {
     const response: IResponse<Clients> = { success: false, data: null };
 
     try {
       const CLIENT = await this.clientRepository.findOne({
-        where: { name },
+        where: { name, company: { id: companyId } },
       });
       response.data = CLIENT;
       response.success = true;
@@ -129,11 +133,12 @@ export class ClientsService {
             razon: 'Cliente existente',
           },
         ];
+        return response;
       }
       const COMPANY_DB = this.companyService.findOneEntity(companyId);
       const DOCTOR_DB = this.doctorService.getById(client.doctorId, companyId);
       const COMPANY_DOCTOR_DB = await Promise.all([COMPANY_DB, DOCTOR_DB]);
-      if ((COMPANY_DOCTOR_DB[0].errors[0].code = 1)) {
+      if (COMPANY_DOCTOR_DB[0] === null) {
         response.errors = [
           {
             code: 401,
@@ -164,7 +169,7 @@ export class ClientsService {
       clientToAdd.profession = client.profession;
 
       clientToAdd.createBy = createBy;
-      clientToAdd.code = await this.generateCode(client);
+      clientToAdd.code = await this.generateCode(client, companyId);
       clientToAdd.company = COMPANY_DOCTOR_DB[0];
       clientToAdd.doctor =
         client?.doctorId !== 0 ? COMPANY_DOCTOR_DB[1]?.data : null;
@@ -203,11 +208,14 @@ export class ClientsService {
     }
     return response;
   }
-  async getLastMaxId(): Promise<string> {
-    const MAX_ID = await this.clientRepository.maximum('id');
-    return MAX_ID.toString();
+  async getLastMaxId(companyId: number): Promise<string> {
+    const MAX_ID = await this.clientRepository.findOne({
+      where: { company: { id: companyId } },
+      select: ['id'],
+    });
+    return (MAX_ID.id + 1).toString();
   }
-  async generateCode(client: IAdd): Promise<string> {
+  async generateCode(client: IAdd, companyId: number): Promise<string> {
     const NAMES = client.name.split(' ');
     const name1 = NAMES[0][0];
     const name2 = NAMES[1][0];
@@ -215,7 +223,7 @@ export class ClientsService {
     const YEAR_BIRTHDAY = client.birthDay.getFullYear().toString();
     const DAY_BIRTHDAY = client.birthDay.getDay().toString();
     const MONTH_BIRTHDAY = client.birthDay.getMonth().toString();
-    const MAX_ID = await this.getLastMaxId();
+    const MAX_ID = await this.getLastMaxId(companyId);
     const paddedStr = MAX_ID.padStart(4, '0');
     const CODE = name1.concat(
       name2,

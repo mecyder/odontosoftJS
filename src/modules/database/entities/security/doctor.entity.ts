@@ -1,8 +1,9 @@
-import { Column, Entity, JoinTable, ManyToMany, OneToMany, OneToOne } from 'typeorm';
+import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany, OneToOne } from 'typeorm';
 import { CustomBaseEntity } from '../base.entity';
 import { Speciality } from './speciality.entity';
 import { User } from './user.entity';
 import { Clients } from '../clients.entity';
+import { Appointment } from '../appointment.entity';
 
 @Entity()
 export class Doctor extends CustomBaseEntity {
@@ -30,4 +31,7 @@ export class Doctor extends CustomBaseEntity {
 
   @OneToMany(() => Clients, (patients) => patients.doctor)
   patients: Clients[];
+
+  @OneToMany(() => Appointment, (appoiment) => appoiment.doctor)
+  appoiment: Appointment[];
 }

@@ -53,8 +53,7 @@ export class UsersService {
     try {
       const USER = await this.userRepository.findOne({
         where: {
-          username: userDto.username,
-          company: { id: userDto.companyId },
+          username: userDto.userName,
         },
         relations: [
           'doctor',
@@ -68,6 +67,9 @@ export class UsersService {
         USER !== null &&
         !(await passwordUtils.desencriptar(userDto?.password, USER?.password))
       ) {
+        return false;
+      }
+      if (!USER.company) {
         return false;
       }
       response.data.Usuario = USER.username;

@@ -9,6 +9,7 @@ import { appoimentsStatus } from 'src/shared/enums/appoiments-status.enum';
 import { CompanyService } from 'src/modules/company/services/company.service';
 import { DoctorService } from 'src/modules/doctor/service/service.service';
 import { NOTFOUND } from 'dns';
+import { UPDATE_TYPE } from '../enums/update.enum';
 
 @Injectable()
 export class AppoinmentsService {
@@ -18,7 +19,7 @@ export class AppoinmentsService {
     private readonly clientService: ClientsService,
     private readonly companyService: CompanyService,
     private readonly doctorService: DoctorService,
-  ) {}
+  ) { }
   async add(appoimentDto: IADD, companyId: number, createBy: number) {
     const response: IResponse<any> = { success: false };
     try {
@@ -189,6 +190,62 @@ export class AppoinmentsService {
         },
       ];
       return response;
+    }
+    return response;
+  }
+  async updateReservationDate({
+    id,
+    companyId,
+    newDate,
+    starHour,
+    updateType,
+  }): Promise<IResponse<any>> {
+    const response: IResponse<any> = { success: false };
+    const duration = moment.duration(1, 'hour');
+
+    try {
+      let APPOINTMENT_DB = await this.appoinmentRepository.findOne({
+        where: { id, company: { id: companyId } },
+      });
+      if (!APPOINTMENT_DB) {
+        response.errors = [
+          {
+            code: 0,
+            message: 'No Encontrado',
+            razon: 'cita no encontrada',
+          },
+        ];
+        return response;
+      }
+      if (updateType === UPDATE_TYPE.date) {
+        APPOINTMENT_DB = {
+          ...APPOINTMENT_DB,
+          start: newDate,
+          end: newDate,
+        };
+      }
+      if (updateType === UPDATE_TYPE.hour) {
+        APPOINTMENT_DB = {
+          ...APPOINTMENT_DB,
+          startTime: moment.utc(starHour).format('hh:mm A'),
+          endTime: moment.utc(starHour).add(duration).format('hh:mm A'),
+        };
+      }
+
+      const UPDATED = await this.appoinmentRepository.update(
+        id,
+        APPOINTMENT_DB,
+      );
+      response.data = UPDATED.affected > 0;
+      response.success = true;
+    } catch (error) {
+      response.errors = [
+        {
+          code: 0,
+          message: `Ocurrrio un error`,
+          razon: error.message,
+        },
+      ];
     }
     return response;
   }

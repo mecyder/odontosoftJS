@@ -41,4 +41,19 @@ export class AppoinmentController {
       statusCode: body.statusCode,
     });
   }
+
+  @Put('setNewDate/:id')
+  async setNewDateOrNewTime(
+    @Param() params: any,
+    @Body() body: any,
+    @Headers() headers: any,
+  ) {
+    return await this.appoinmentService.updateReservationDate({
+      id: params.id,
+      companyId: headers.companyid,
+      newDate: body.newDate,
+      starHour: body.starHour,
+      updateType: body.updateType,
+    });
+  }
 }

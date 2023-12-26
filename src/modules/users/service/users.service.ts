@@ -24,6 +24,7 @@ export class UsersService {
       data: {
         Estado: null,
         Doctor: {
+          Id: 0,
           Correo: '',
           Direccion: '',
           Execuator: '',
@@ -77,6 +78,7 @@ export class UsersService {
       response.data.userId = USER.id;
       response.data.Ultima_Coneccion =
         USER?.last_connection?.toLocaleDateString();
+      response.data.Doctor.Id = USER?.doctor?.id;
       response.data.Doctor.Nombre = USER?.doctor?.name;
       response.data.Doctor.Correo = USER?.doctor?.email;
       response.data.Doctor.Direccion = USER?.doctor?.address;
@@ -147,6 +149,7 @@ export class UsersService {
             Logo: user?.company?.logo,
           },
           Doctor: {
+            Id: user?.doctor?.id,
             Nombre: user?.doctor?.name,
             Correo: user?.doctor?.email,
             Telefono: user?.doctor?.phone,

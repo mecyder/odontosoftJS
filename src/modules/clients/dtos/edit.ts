@@ -7,4 +7,7 @@ export interface IEdit {
     birthDay: Date;
     sex: string;
     email: string;
+    emergency_contact_name?: string;
+    emergency_contact_phone?: string;
+    emergency_contact_movil?: string;
 }

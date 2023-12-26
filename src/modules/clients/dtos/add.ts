@@ -11,4 +11,9 @@ export interface IAdd {
   code: string;
   profession: string;
   doctorId: number;
+  emergency_contact?: {
+    name: string;
+    phone: string;
+    movil: string;
+  };
 }

@@ -9,6 +9,9 @@ import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
 import { CompanyModule } from './modules/company/company.module';
 import { DoctorModule } from './modules/doctor/doctor.module';
+import { AilmentsModule } from './modules/ailments/ailments.module';
+import { AilmentsController } from './modules/controller/ailments/ailments.controller';
+import { TemplatesModule } from './modules/templates/templates.module';
 
 @Module({
   imports: [
@@ -20,8 +23,10 @@ import { DoctorModule } from './modules/doctor/doctor.module';
     UsersModule,
     CompanyModule,
     DoctorModule,
+    AilmentsModule,
+    TemplatesModule,
   ],
-  controllers: [AppController],
+  controllers: [AppController, AilmentsController],
   providers: [AppService],
 })
 export class AppModule { }

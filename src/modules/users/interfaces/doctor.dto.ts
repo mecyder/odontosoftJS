@@ -1,5 +1,6 @@
 
 export interface IDoctorList {
+  Id: number;
   Nombre: string;
   Direccion: string;
   Telefono: string;

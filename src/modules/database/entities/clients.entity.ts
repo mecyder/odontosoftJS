@@ -10,8 +10,9 @@ import {
 import { CustomBaseEntity } from './base.entity';
 import { ClientTypeEnum } from 'src/modules/clients/enums/types';
 import { SexEnum } from 'src/modules/clients/enums/sex';
-import { Appointment, Doctor } from './index';
+import { Appointment, Doctor, PersonalBackground } from './index';
 import { Company } from './company.entity';
+import { Ailments } from './ailments.entity';
 
 @Entity()
 export class Clients extends CustomBaseEntity {
@@ -62,6 +63,15 @@ export class Clients extends CustomBaseEntity {
   @Column({ length: 150, nullable: true })
   profession: string;
 
+  @Column({ length: 250, nullable: true })
+  emergency_contact_name: string;
+
+  @Column({ length: 10, nullable: true })
+  emergency_contact_phone: string;
+
+  @Column({ length: 10, nullable: true })
+  emergency_contact_movil: string;
+
   @OneToMany(() => Appointment, (appointment) => appointment.client)
   appointment: Appointment[];
 
@@ -85,4 +95,12 @@ export class Clients extends CustomBaseEntity {
 
   @ManyToOne(() => Company, (company) => company.patients)
   company: Company;
+
+  @OneToOne(
+    () => PersonalBackground,
+    (personalBackground) => personalBackground.client,
+  ) // specify inverse side as a second parameter
+  personalBackground: PersonalBackground;
+  @OneToOne(() => Ailments, (ailments) => ailments.client)
+  ailments: Ailments;
 }

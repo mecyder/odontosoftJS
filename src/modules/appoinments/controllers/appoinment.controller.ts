@@ -13,7 +13,7 @@ import { IADD } from '../dtos/add';
 
 @Controller('appoinment')
 export class AppoinmentController {
-  constructor(private readonly appoinmentService: AppoinmentsService) { }
+  constructor(private readonly appoinmentService: AppoinmentsService) {}
   @Post()
   @Header('content-type', 'application/json')
   async add(@Body() appoimentDto: IADD, @Headers() headers: any) {
@@ -27,6 +27,17 @@ export class AppoinmentController {
   @Header('content-type', 'application/json')
   async findAll(@Headers() headers: any) {
     return await this.appoinmentService.findAll(+headers.companyid);
+  }
+  @Get('findAllByDoctor/:doctorId')
+  @Header('content-type', 'application/json')
+  async findAllByDoctor(
+    @Param('doctorId') doctorId: number,
+    @Headers() headers: any,
+  ) {
+    return await this.appoinmentService.findAllByDoctor(
+      +headers.companyid,
+      doctorId,
+    );
   }
   @Get(':id')
   async findById(@Param() param: any) {

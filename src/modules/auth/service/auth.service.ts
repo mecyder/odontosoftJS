@@ -25,7 +25,7 @@ export class AuthService {
       username: USER.data.Usuario,
       roles: USER.data.Roles,
       company: USER.data.Company,
-      doctor: USER.data.doctor,
+      doctor: USER.data.Doctor,
     };
     return {
       access_token: await this.jwtService.signAsync(payload),

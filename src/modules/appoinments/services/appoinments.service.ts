@@ -1,6 +1,6 @@
 import { Injectable, Inject, HttpStatus, HttpCode } from '@nestjs/common';
 import { Appointment } from 'src/modules/database/entities';
-import { Repository } from 'typeorm';
+import { LessThan, Repository } from 'typeorm';
 import { IADD, IList } from '../dtos';
 import { IResponse } from 'src/shared/interfaces/response';
 import * as moment from 'moment';
@@ -8,7 +8,6 @@ import { ClientsService } from 'src/modules/clients/services/clients.service';
 import { appoimentsStatus } from 'src/shared/enums/appoiments-status.enum';
 import { CompanyService } from 'src/modules/company/services/company.service';
 import { DoctorService } from 'src/modules/doctor/service/service.service';
-import { NOTFOUND } from 'dns';
 import { UPDATE_TYPE } from '../enums/update.enum';
 
 @Injectable()
@@ -19,7 +18,7 @@ export class AppoinmentsService {
     private readonly clientService: ClientsService,
     private readonly companyService: CompanyService,
     private readonly doctorService: DoctorService,
-  ) { }
+  ) {}
   async add(appoimentDto: IADD, companyId: number, createBy: number) {
     const response: IResponse<any> = { success: false };
     try {
@@ -123,10 +122,52 @@ export class AppoinmentsService {
 
     try {
       const APPOINMENTS = await this.appoinmentRepository.find({
-        relations: ['client', 'doctor'],
+        relations: [
+          'client',
+          'doctor',
+          'client.personalBackground',
+          'client.ailments',
+          'client.ailments',
+          'client.ailments.ailmentsAlerts',
+        ],
         where: {
           company: { id: companyId, status: true },
           appointmentStatus: 0,
+          start: new Date(),
+        },
+      });
+      response.data = APPOINMENTS;
+      response.success = true;
+      response.total = APPOINMENTS.length;
+    } catch (error) {
+      throw new Error(error.message);
+    }
+    return response;
+  }
+
+  async findAllByDoctor(
+    companyId: number,
+    doctorId: number,
+  ): Promise<IResponse<Appointment[]>> {
+    const response: IResponse<Appointment[]> = { success: false, data: null };
+
+    try {
+      const APPOINMENTS = await this.appoinmentRepository.find({
+        relations: [
+          'client',
+          'doctor',
+          'client.personalBackground',
+          'client.ailments',
+          'client.ailments',
+          'client.ailments.ailmentsAlerts',
+        ],
+        where: {
+          company: { id: companyId, status: true },
+          appointmentStatus: 1,
+          start: new Date(),
+          doctor: {
+            id: doctorId,
+          },
         },
       });
       response.data = APPOINMENTS;
@@ -144,6 +185,14 @@ export class AppoinmentsService {
     try {
       const APPOINMENT = await this.appoinmentRepository.findOne({
         where: { id: id },
+        relations: [
+          'client',
+          'doctor',
+          'client.personalBackground',
+          'client.ailments',
+          'client.ailments',
+          'client.ailments.ailmentsAlerts',
+        ],
       });
       response.data = APPOINMENT;
       response.success = true;

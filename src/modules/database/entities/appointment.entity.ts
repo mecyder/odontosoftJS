@@ -1,4 +1,4 @@
-import { Column, Entity, ManyToMany, ManyToOne, OneToMany, OneToOne } from 'typeorm';
+import { Column, Entity, ManyToOne } from 'typeorm';
 import { CustomBaseEntity } from './base.entity';
 import { Clients } from './clients.entity';
 import { appoimentsStatus } from 'src/shared/enums/appoiments-status.enum';

@@ -7,7 +7,7 @@ import { CompanyModule } from '../company/company.module';
 import { DoctorModule } from '../doctor/doctor.module';
 
 @Module({
-  imports: [DatabaseModule, CompanyModule,DoctorModule],
+  imports: [DatabaseModule, CompanyModule, DoctorModule],
   exports: [ClientsService],
   providers: [...clientsProviders, ClientsService],
   controllers: [ClientsController],

@@ -22,7 +22,7 @@ export class ClientsService {
     try {
       const CLIENTS = await this.clientRepository.find({
         where: { status: true, company: { id: companyId } },
-        relations: ['personalBackground','ailments'],
+        relations: ['personalBackground', 'ailments', 'vital_sings'],
       });
       response.data = CLIENTS;
       response.success = true;
@@ -43,7 +43,7 @@ export class ClientsService {
           status: true,
           company: { id: companyId },
         },
-        relations: ['personalBackground','ailments'],
+        relations: ['personalBackground', 'ailments', 'vital_sings'],
       });
       response.data = CLIENT;
       response.success = true;
@@ -63,7 +63,7 @@ export class ClientsService {
     try {
       const CLIENT = await this.clientRepository.findOne({
         where: { identification, company: { id: companyId } },
-        relations: ['personalBackground','ailments'],
+        relations: ['personalBackground', 'ailments', 'vital_sings'],
       });
       response.data = CLIENT;
       response.success = true;
@@ -83,7 +83,7 @@ export class ClientsService {
     try {
       const CLIENT = await this.clientRepository.findOne({
         where: { name, company: { id: companyId } },
-        relations: ['personalBackground','ailments'],
+        relations: ['personalBackground', 'ailments', 'vital_sings'],
       });
       response.data = CLIENT;
       response.success = true;
@@ -99,7 +99,7 @@ export class ClientsService {
     companyId: number,
   ): Promise<IResponse<Clients>> {
     const response: IResponse<Clients> = { success: false, data: null };
-
+    console.log(code.replace("'", ''));
     try {
       const CLIENT = await this.clientRepository.findOne({
         where: {
@@ -107,7 +107,7 @@ export class ClientsService {
           status: true,
           company: { id: companyId },
         },
-        relations: ['personalBackground','ailments'],
+        relations: ['personalBackground', 'ailments', 'vital_sings'],
       });
       response.data = CLIENT;
       response.success = true;

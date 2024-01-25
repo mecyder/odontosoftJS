@@ -12,6 +12,9 @@ import { DoctorModule } from './modules/doctor/doctor.module';
 import { AilmentsModule } from './modules/ailments/ailments.module';
 import { AilmentsController } from './modules/controller/ailments/ailments.controller';
 import { TemplatesModule } from './modules/templates/templates.module';
+import { EmailService } from './modules/email/Service/email.service';
+import { EmailModule } from './modules/email/email.module';
+import { VitalSignsModule } from './modules/vital-signs/vital-signs.module';
 
 @Module({
   imports: [
@@ -25,8 +28,10 @@ import { TemplatesModule } from './modules/templates/templates.module';
     DoctorModule,
     AilmentsModule,
     TemplatesModule,
+    EmailModule,
+    VitalSignsModule,
   ],
   controllers: [AppController, AilmentsController],
-  providers: [AppService],
+  providers: [AppService, EmailService],
 })
 export class AppModule { }

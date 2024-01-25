@@ -9,6 +9,7 @@ import { appoimentsStatus } from 'src/shared/enums/appoiments-status.enum';
 import { CompanyService } from 'src/modules/company/services/company.service';
 import { DoctorService } from 'src/modules/doctor/service/service.service';
 import { UPDATE_TYPE } from '../enums/update.enum';
+import { EmailService } from 'src/modules/email/Service/email.service';
 
 @Injectable()
 export class AppoinmentsService {
@@ -18,6 +19,7 @@ export class AppoinmentsService {
     private readonly clientService: ClientsService,
     private readonly companyService: CompanyService,
     private readonly doctorService: DoctorService,
+    private readonly emailService: EmailService,
   ) {}
   async add(appoimentDto: IADD, companyId: number, createBy: number) {
     const response: IResponse<any> = { success: false };
@@ -127,8 +129,9 @@ export class AppoinmentsService {
           'doctor',
           'client.personalBackground',
           'client.ailments',
-          'client.ailments',
           'client.ailments.ailmentsAlerts',
+          'client.vital_sings',
+          'client.physicalExam',
         ],
         where: {
           company: { id: companyId, status: true },
@@ -158,8 +161,9 @@ export class AppoinmentsService {
           'doctor',
           'client.personalBackground',
           'client.ailments',
-          'client.ailments',
           'client.ailments.ailmentsAlerts',
+          'client.vital_sings',
+          'client.physicalExam',
         ],
         where: {
           company: { id: companyId, status: true },
@@ -190,8 +194,9 @@ export class AppoinmentsService {
           'doctor',
           'client.personalBackground',
           'client.ailments',
-          'client.ailments',
           'client.ailments.ailmentsAlerts',
+          'client.vital_sings',
+          'client.physicalExam',
         ],
       });
       response.data = APPOINMENT;
@@ -285,6 +290,7 @@ export class AppoinmentsService {
         id,
         APPOINTMENT_DB,
       );
+      this.emailService.getInstance().send('hola');
       response.data = UPDATED.affected > 0;
       response.success = true;
     } catch (error) {

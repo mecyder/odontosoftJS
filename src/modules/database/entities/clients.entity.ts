@@ -13,6 +13,8 @@ import { SexEnum } from 'src/modules/clients/enums/sex';
 import { Appointment, Doctor, PersonalBackground } from './index';
 import { Company } from './company.entity';
 import { Ailments } from './ailments.entity';
+import { VitalSings } from './vital.signs.entity';
+import { PhysicalExam } from './physical.exams.entity';
 
 @Entity()
 export class Clients extends CustomBaseEntity {
@@ -103,4 +105,10 @@ export class Clients extends CustomBaseEntity {
   personalBackground: PersonalBackground;
   @OneToOne(() => Ailments, (ailments) => ailments.client)
   ailments: Ailments;
+
+  @OneToOne(() => VitalSings, (vital_sings) => vital_sings.client)
+  vital_sings: VitalSings;
+
+  @OneToOne(() => PhysicalExam, (physicalExam) => physicalExam.client)
+  physicalExam: PhysicalExam;
 }

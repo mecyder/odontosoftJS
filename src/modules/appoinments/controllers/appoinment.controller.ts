@@ -62,8 +62,8 @@ export class AppoinmentController {
     return await this.appoinmentService.updateReservationDate({
       id: params.id,
       companyId: headers.companyid,
-      newDate: body.newDate,
-      starHour: body.starHour,
+      newDate: body?.newDate,
+      starHour: body?.starHour,
       updateType: body.updateType,
     });
   }

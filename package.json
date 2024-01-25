@@ -29,10 +29,13 @@
     "bcrypt": "^5.1.1",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.0",
+    "gmail-send": "^1.8.14",
     "moment": "^2.29.4",
+    "nodemailer": "^6.9.8",
     "pg": "^8.11.3",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.2.0",
+    "sendmail": "^1.6.1",
     "typeorm": "^0.3.17"
   },
   "devDependencies": {

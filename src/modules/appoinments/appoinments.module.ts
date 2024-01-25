@@ -6,9 +6,16 @@ import { AppoinmentController } from './controllers/appoinment.controller';
 import { ClientsModule } from '../clients/clients.module';
 import { CompanyModule } from '../company/company.module';
 import { DoctorModule } from '../doctor/doctor.module';
+import { EmailModule } from '../email/email.module';
 @Module({
-    imports: [DatabaseModule, ClientsModule, CompanyModule, DoctorModule],
-    providers: [...appointmentsProviders, AppoinmentsService],
-    controllers: [AppoinmentController],
+  imports: [
+    DatabaseModule,
+    ClientsModule,
+    CompanyModule,
+    DoctorModule,
+    EmailModule,
+  ],
+  providers: [...appointmentsProviders, AppoinmentsService],
+  controllers: [AppoinmentController],
 })
-export class AppoinmentsModule { }
+export class AppoinmentsModule {}

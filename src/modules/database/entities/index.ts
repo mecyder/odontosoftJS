@@ -8,3 +8,9 @@ export { Speciality } from './security/speciality.entity';
 export { Rol } from './security/rol.entity';
 export { User } from './security/user.entity';
 export { View } from './security/view.entity';
+
+export { AilmentsAlerts } from './ailments.alert.entity';
+export { Ailments } from './ailments.entity';
+export { VitalSings } from './vital.signs.entity';
+export { PhysicalExam } from './physical.exams.entity';
+export { Template } from './template.entity';

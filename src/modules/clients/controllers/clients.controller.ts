@@ -15,27 +15,32 @@ export class ClientsController {
   constructor(private readonly clientsService: ClientsService) { }
 
   @Get()
-  async findAll(@Headers() header: any) {
-    return this.clientsService.findAll(+header.companyid);
+  async findAll(@Headers('companyId') companyid: any) {
+    return this.clientsService.findAll(+companyid);
   }
   @Get(':id')
-  async findById(@Param() params: any, @Headers() header: any) {
+  async findById(@Param() params: any, @Headers('companyId') header: any) {
     return this.clientsService.findById(params.id, header.companyid);
   }
   @Get('/bycode/:code')
-  async getByCode(@Param() params: any, @Headers('companyId') header: any) {
-    const { code } = params;
-    return this.clientsService.findByCode(code, header.companyid);
+  async getByCode(@Param('code') params: string, @Headers() headers: any) {
+    return this.clientsService.findByCode(params, +headers.companyid);
   }
   @Get('/byname/:name')
-  async getByName(@Param() params: any, @Headers() header: any) {
-    return this.clientsService.findByName(params.name, +header.companyid);
+  async getByName(
+    @Param('name') name: any,
+    @Headers('companyid') companyid: any,
+  ) {
+    return this.clientsService.findByName(name, +companyid);
   }
   @Get('/byidentification/:identification')
-  async getByIdentification(@Param() params: any, @Headers() header: any) {
+  async getByIdentification(
+    @Param() params: any,
+    @Headers('companyid') companyid: any,
+  ) {
     return this.clientsService.findByIdentification(
       params.identification,
-      +header.companyid,
+      +companyid,
     );
   }
   @Post()

@@ -3,12 +3,15 @@ import { VitalSings } from 'src/modules/database/entities';
 import { Repository } from 'typeorm';
 import { IListVitalSigns } from '../dtos/vitals.signs.dto';
 import { IResponse } from 'src/shared/interfaces/response';
+import { IAdd } from '../dtos/add.dto';
+import { ClientsService } from 'src/modules/clients/services/clients.service';
 @Injectable()
 export class VitalSignsService {
   constructor(
     @Inject('VITALSIGNS_REPOSITORY')
     private vitalSingsRepository: Repository<VitalSings>,
-  ) {}
+    private clientService: ClientsService,
+  ) { }
 
   async findOne(patientId: number, companyId: number) {
     const response: IResponse<IListVitalSigns> = {
@@ -81,5 +84,68 @@ export class VitalSignsService {
       });
     });
     return RESULT;
+  }
+
+  async add(companyId: number, payload: IAdd, createBy: number) {
+    const response: IResponse<IListVitalSigns> = {
+      success: false,
+      data: {
+        hgWeight: 0,
+        minBloodPressure: 0,
+        minBreathingFrequency: 0,
+        pulsations: 0,
+      },
+      errors: undefined,
+    };
+    try {
+      const EXISTS = await this.vitalSingsRepository.findOne({
+        where: {
+          client: { id: payload.patientId, company: { id: companyId } },
+          status: true,
+        },
+      });
+      if (EXISTS) {
+        response.errors = [
+          {
+            code: HttpStatus.BAD_REQUEST,
+            message: 'Hubo un error al momento de crear el registro',
+            razon: 'ya existe un registro para ese paciente',
+          },
+        ];
+        return response;
+      }
+      const CLIENT = await this.clientService.findById(
+        payload.patientId,
+        companyId,
+      );
+
+      const VITAL_SING_TO_ADD: Partial<VitalSings> = {
+        minBloodPressure: payload.presion,
+        minBreathingFrequency: payload.respiracion,
+        pulsations: payload.pulsaciones,
+        hgWeight: payload.peso,
+        client: CLIENT?.data,
+        createAt: new Date(),
+        createBy: createBy,
+        status: true,
+      };
+      const objToCreate = await this.vitalSingsRepository.create(
+        VITAL_SING_TO_ADD,
+      );
+
+      const CREATED = await this.vitalSingsRepository.save(objToCreate);
+      response.data = CREATED;
+      response.success = true;
+      response.total = 1;
+    } catch (error) {
+      response.errors = [
+        {
+          code: error.statusCode,
+          message: 'Hubo un error al momento de crear el registro',
+          razon: error.message,
+        },
+      ];
+    }
+    return response;
   }
 }

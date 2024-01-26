@@ -15,6 +15,7 @@ import { TemplatesModule } from './modules/templates/templates.module';
 import { EmailService } from './modules/email/Service/email.service';
 import { EmailModule } from './modules/email/email.module';
 import { VitalSignsModule } from './modules/vital-signs/vital-signs.module';
+import { PhysycalExamsModule } from './modules/physycal-exams/physycal-exams.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { VitalSignsModule } from './modules/vital-signs/vital-signs.module';
     TemplatesModule,
     EmailModule,
     VitalSignsModule,
+    PhysycalExamsModule,
   ],
   controllers: [AppController, AilmentsController],
   providers: [AppService, EmailService],

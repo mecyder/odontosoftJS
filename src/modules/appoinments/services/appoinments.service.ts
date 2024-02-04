@@ -132,6 +132,8 @@ export class AppoinmentsService {
           'client.ailments.ailmentsAlerts',
           'client.vital_sings',
           'client.physicalExam',
+          'client.physicalConditionObservations'
+
         ],
         where: {
           company: { id: companyId, status: true },
@@ -164,6 +166,7 @@ export class AppoinmentsService {
           'client.ailments.ailmentsAlerts',
           'client.vital_sings',
           'client.physicalExam',
+          'client.physicalConditionObservations'
         ],
         where: {
           company: { id: companyId, status: true },
@@ -197,6 +200,8 @@ export class AppoinmentsService {
           'client.ailments.ailmentsAlerts',
           'client.vital_sings',
           'client.physicalExam',
+          'client.physicalConditionObservations'
+
         ],
       });
       response.data = APPOINMENT;

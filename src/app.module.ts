@@ -16,6 +16,10 @@ import { EmailService } from './modules/email/Service/email.service';
 import { EmailModule } from './modules/email/email.module';
 import { VitalSignsModule } from './modules/vital-signs/vital-signs.module';
 import { PhysycalExamsModule } from './modules/physycal-exams/physycal-exams.module';
+import { PhysycalConditionsObservationsModule } from './modules/physycal-conditions-observations/physycal-conditions-observations.module';
+import { ServiceService } from './modules/detail-procedures-performed/service/service.service';
+import { DetailProceduresPerformedModule } from './modules/detail-procedures-performed/detail-procedures-performed.module';
+import { OdontogramaModule } from './modules/odontograma/odontograma.module';
 
 @Module({
   imports: [
@@ -32,8 +36,11 @@ import { PhysycalExamsModule } from './modules/physycal-exams/physycal-exams.mod
     EmailModule,
     VitalSignsModule,
     PhysycalExamsModule,
+    PhysycalConditionsObservationsModule,
+    DetailProceduresPerformedModule,
+    OdontogramaModule,
   ],
-  controllers: [AppController, AilmentsController],
-  providers: [AppService, EmailService],
+  controllers: [AppController],
+  providers: [AppService, EmailService, ServiceService],
 })
 export class AppModule { }

@@ -79,6 +79,10 @@ export class PhysicalExamsService {
     companyId: number,
     userCreator: number,
   ): Promise<Partial<PhysicalExam>> {
+    const client = await this.clientService.findById(
+      payload.pacienteId,
+      companyId,
+    );
     return {
       face: payload.cara,
       head: payload.cabeza,
@@ -86,8 +90,7 @@ export class PhysicalExamsService {
       neck: payload.cuello,
       other: payload.otros,
       palate: payload.paladar,
-      client: (await this.clientService.findById(payload.pacienteId, companyId))
-        ?.data,
+      client: client?.data,
       createAt: new Date(),
       createBy: userCreator,
       status: true,

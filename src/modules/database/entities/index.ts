@@ -14,3 +14,10 @@ export { Ailments } from './ailments.entity';
 export { VitalSings } from './vital.signs.entity';
 export { PhysicalExam } from './physical.exams.entity';
 export { Template } from './template.entity';
+
+export { Odontograma } from './odontograma.entity';
+export { Procedures } from './procedures.entity';
+export { Procedures_Materials } from './procedures-mateirials.entity';
+export { Materials } from './materials.entity';
+export { MaterialsCategories } from './materials_categories.entity';
+export { Providers } from './providers.entity';

@@ -5,16 +5,17 @@ import { Add } from '../dtos/add.dto';
 @Controller('odontograma')
 export class OdontogramaController {
   constructor(private odontogramaService: OdontogramaService) {}
-  @Post()
+  @Post(':patientId')
   async add(
     @Body() odontograma: Add,
     @Headers() headers: any,
-    @Param(':patientId') params: any,
+    @Param() params: any,
   ) {
     return await this.odontogramaService.add(
       headers.companyid,
       params.patientId,
       odontograma,
+      headers.createby,
     );
   }
 }

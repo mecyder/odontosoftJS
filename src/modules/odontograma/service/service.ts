@@ -12,9 +12,14 @@ export class OdontogramaService {
     @Inject('ODONTOGRAMA_REPOSITORY')
     private odontogramaRepository: Repository<Odontograma>,
     private patientsService: ClientsService,
-  ) { }
+  ) {}
 
-  async add(companyId: number, patientsId: number, odontograma: Add) {
+  async add(
+    companyId: number,
+    patientsId: number,
+    odontograma: Add,
+    creator: number,
+  ) {
     const response: IResponse<IOdontogramaDto> = {
       success: false,
       errors: [
@@ -29,8 +34,11 @@ export class OdontogramaService {
       observations: odontograma.observations,
       tooth: odontograma.tooth,
       symptoms: odontograma.symptoms,
+      createAt: new Date(),
       patients: (await this.patientsService.findById(patientsId, companyId))
         .data,
+      createBy: creator,
+      isDone: false,
     };
     const CREATED = await this.odontogramaRepository.save(
       this.odontogramaRepository.create(dtoToEntityObject),

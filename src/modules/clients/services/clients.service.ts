@@ -226,12 +226,13 @@ export class ClientsService {
       where: { company: { id: companyId } },
       select: ['id'],
     });
-    const id = MAX_ID.id ?? 0;
+    const id = MAX_ID?.id ?? 0;
     console.log(`id ${id}`);
 
     return (id + 1).toString();
   }
   async generateCode(client: IAdd, companyId: number): Promise<string> {
+
     const NAMES = client.name.split(' ');
     const name1 = NAMES[0][0];
     const name2 = NAMES[1][0];

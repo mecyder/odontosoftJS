@@ -14,7 +14,7 @@ export class ClientsService {
     @Inject('CLIENTS_REPOSITORY') private clientRepository: Repository<Clients>,
     private companyService: CompanyService,
     private readonly doctorService: DoctorService,
-  ) {}
+  ) { }
 
   async findAll(companyId: number): Promise<IResponse<Clients[]>> {
     const response: IResponse<Clients[]> = { success: false, data: null };
@@ -141,6 +141,7 @@ export class ClientsService {
         return response;
       }
       const COMPANY_DB = this.companyService.findOneEntity(companyId);
+      console.log(COMPANY_DB);
       const DOCTOR_DB = this.doctorService.getById(client.doctorId, companyId);
       const COMPANY_DOCTOR_DB = await Promise.all([COMPANY_DB, DOCTOR_DB]);
       if (COMPANY_DOCTOR_DB[0] === null) {
@@ -220,7 +221,9 @@ export class ClientsService {
       where: { company: { id: companyId } },
       select: ['id'],
     });
-    return (MAX_ID.id + 1).toString();
+    const id = MAX_ID.id ?? 0;
+    console.log(`id count ${id}`);
+    return (id + 1).toString();
   }
   async generateCode(client: IAdd, companyId: number): Promise<string> {
     const NAMES = client.name.split(' ');

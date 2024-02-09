@@ -123,6 +123,8 @@ export class ClientsService {
     createBy: number,
   ): Promise<IResponse<Clients>> {
     const response: IResponse<Clients> = { success: false, data: null };
+    console.log('inciando consulta de cliente');
+
     try {
       const COUNT_EXIST = await this.clientRepository.count({
         where: {
@@ -130,6 +132,8 @@ export class ClientsService {
           company: { id: companyId },
         },
       });
+      console.log('cliente no encontrado');
+
       if (COUNT_EXIST > 0) {
         response.errors = [
           {
@@ -141,7 +145,6 @@ export class ClientsService {
         return response;
       }
       const COMPANY_DB = this.companyService.findOneEntity(companyId);
-      console.log(COMPANY_DB);
       const DOCTOR_DB = this.doctorService.getById(client.doctorId, companyId);
       const COMPANY_DOCTOR_DB = await Promise.all([COMPANY_DB, DOCTOR_DB]);
       if (COMPANY_DOCTOR_DB[0] === null) {
@@ -177,6 +180,8 @@ export class ClientsService {
       clientToAdd.emergency_contact_phone = client?.emergency_contact?.phone;
       clientToAdd.emergency_contact_movil = client?.emergency_contact?.movil;
       clientToAdd.createBy = createBy;
+      console.log(`datos a agregar de cliente ${clientToAdd}`);
+
       clientToAdd.code = await this.generateCode(client, companyId);
       clientToAdd.company = COMPANY_DOCTOR_DB[0];
       clientToAdd.doctor =

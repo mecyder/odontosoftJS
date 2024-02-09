@@ -222,6 +222,8 @@ export class ClientsService {
       select: ['id'],
     });
     const id = MAX_ID.id ?? 0;
+    console.log(`id ${id}`);
+
     return (id + 1).toString();
   }
   async generateCode(client: IAdd, companyId: number): Promise<string> {

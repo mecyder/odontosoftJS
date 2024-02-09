@@ -222,7 +222,6 @@ export class ClientsService {
       select: ['id'],
     });
     const id = MAX_ID.id ?? 0;
-    console.log(`id count ${id}`);
     return (id + 1).toString();
   }
   async generateCode(client: IAdd, companyId: number): Promise<string> {
@@ -234,6 +233,8 @@ export class ClientsService {
     const DAY_BIRTHDAY = client.birthDay.getDay().toString();
     const MONTH_BIRTHDAY = client.birthDay.getMonth().toString();
     const MAX_ID = await this.getLastMaxId(companyId);
+    console.log(`MAX_ID ${MAX_ID}`);
+
     const paddedStr = MAX_ID.padStart(4, '0');
     const CODE = name1.concat(
       name2,
@@ -242,6 +243,8 @@ export class ClientsService {
       MONTH_BIRTHDAY,
       paddedStr,
     );
+    console.log(`CODE ${CODE}`);
+
     return CODE;
   }
 }

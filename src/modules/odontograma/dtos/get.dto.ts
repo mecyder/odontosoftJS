@@ -1,4 +1,4 @@
-import { IsNumber, IsPositive, IsString } from 'class-validator';
+import { IsNumber, IsPositive, IsString, IsOptional } from 'class-validator';
 
 export class IOdontogramaDto {
   @IsNumber()
@@ -11,4 +11,11 @@ export class IOdontogramaDto {
   Sintomas: string;
   @IsString()
   Observaciones: string;
+  @IsNumber()
+  @IsPositive()
+  @IsOptional()
+  id?: number;
+  @IsOptional()
+  @IsString()
+  procedureDescription?: string;
 }

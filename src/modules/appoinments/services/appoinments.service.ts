@@ -20,7 +20,7 @@ export class AppoinmentsService {
     private readonly companyService: CompanyService,
     private readonly doctorService: DoctorService,
     private readonly emailService: EmailService,
-  ) {}
+  ) { }
   async add(appoimentDto: IADD, companyId: number, createBy: number) {
     const response: IResponse<any> = { success: false };
     try {
@@ -97,6 +97,13 @@ export class AppoinmentsService {
         response.success = true;
         response.data = CREATED;
         response.total = 1;
+        await this.emailService
+          .getInstance()
+          .send(
+            'Nueva Cita Creada',
+            'subdirectoradjunto@gmail.com',
+            'prueba de nueva cita creada',
+          );
       }
     } catch (error) {
       throw new Error(error.message);
@@ -132,8 +139,7 @@ export class AppoinmentsService {
           'client.ailments.ailmentsAlerts',
           'client.vital_sings',
           'client.physicalExam',
-          'client.physicalConditionObservations'
-
+          'client.physicalConditionObservations',
         ],
         where: {
           company: { id: companyId, status: true },
@@ -166,7 +172,7 @@ export class AppoinmentsService {
           'client.ailments.ailmentsAlerts',
           'client.vital_sings',
           'client.physicalExam',
-          'client.physicalConditionObservations'
+          'client.physicalConditionObservations',
         ],
         where: {
           company: { id: companyId, status: true },
@@ -200,8 +206,7 @@ export class AppoinmentsService {
           'client.ailments.ailmentsAlerts',
           'client.vital_sings',
           'client.physicalExam',
-          'client.physicalConditionObservations'
-
+          'client.physicalConditionObservations',
         ],
       });
       response.data = APPOINMENT;
@@ -265,6 +270,7 @@ export class AppoinmentsService {
     try {
       let APPOINTMENT_DB = await this.appoinmentRepository.findOne({
         where: { id, company: { id: companyId } },
+        relations: ['client'],
       });
       if (!APPOINTMENT_DB) {
         response.errors = [
@@ -295,7 +301,13 @@ export class AppoinmentsService {
         id,
         APPOINTMENT_DB,
       );
-      this.emailService.getInstance().send('hola');
+      await this.emailService
+        .getInstance()
+        .send(
+          'Actualizacion de su cita',
+          APPOINTMENT_DB.client.email,
+          'Cita Actualizada',
+        );
       response.data = UPDATED.affected > 0;
       response.success = true;
     } catch (error) {

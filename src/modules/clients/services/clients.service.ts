@@ -28,7 +28,13 @@ export class ClientsService {
       response.success = true;
       response.total = CLIENTS.length;
     } catch (error) {
-      throw new Error(error.message);
+      response.errors = [
+        {
+          code: error.statusCode,
+          message: 'Hubo un error al momento de consultar los registro',
+          razon: error.message,
+        },
+      ];
     }
     return response;
   }
@@ -49,7 +55,13 @@ export class ClientsService {
       response.success = true;
       response.total = CLIENT ? 1 : 0;
     } catch (error) {
-      throw new Error(error.message);
+      response.errors = [
+        {
+          code: error.statusCode,
+          message: 'Hubo un error al momento de consultar el registro',
+          razon: error.message,
+        },
+      ];
     }
     return response;
   }
@@ -69,7 +81,13 @@ export class ClientsService {
       response.success = true;
       response.total = CLIENT ? 1 : 0;
     } catch (error) {
-      throw new Error(error.message);
+      response.errors = [
+        {
+          code: error.statusCode,
+          message: 'Hubo un error al momento de consultar el registro',
+          razon: error.message,
+        },
+      ];
     }
     return response;
   }
@@ -89,7 +107,13 @@ export class ClientsService {
       response.success = true;
       response.total = CLIENT ? 1 : 0;
     } catch (error) {
-      throw new Error(error.message);
+      response.errors = [
+        {
+          code: error.statusCode,
+          message: 'Hubo un error al momento de consultar el registro',
+          razon: error.message,
+        },
+      ];
     }
     return response;
   }
@@ -113,8 +137,13 @@ export class ClientsService {
       response.success = true;
       response.total = CLIENT ? 1 : 0;
     } catch (error) {
-      throw new Error(error.message);
-    }
+      response.errors = [
+        {
+          code: error.statusCode,
+          message: 'Hubo un error al momento de consultar el registro',
+          razon: error.message,
+        },
+      ];    }
     return response;
   }
   async add(
@@ -189,7 +218,13 @@ export class ClientsService {
       response.data = await this.clientRepository.save(clientToAdd);
       response.success = true;
     } catch (error) {
-      throw new Error(error.message);
+      response.errors = [
+        {
+          code: error.statusCode,
+          message: 'Hubo un error al momento de crear el registro',
+          razon: error.message,
+        },
+      ];
     }
     return response;
   }
@@ -217,7 +252,13 @@ export class ClientsService {
       response.data = UPDATED.affected;
       response.success = UPDATED.affected > 0;
     } catch (error) {
-      throw new Error(error.message);
+      response.errors = [
+        {
+          code: error.statusCode,
+          message: 'Hubo un error al momento de editar el registro',
+          razon: error.message,
+        },
+      ];
     }
     return response;
   }
@@ -232,7 +273,6 @@ export class ClientsService {
     return (id + 1).toString();
   }
   async generateCode(client: IAdd, companyId: number): Promise<string> {
-
     const NAMES = client.name.split(' ');
     const name1 = NAMES[0][0];
     const name2 = NAMES[1][0];

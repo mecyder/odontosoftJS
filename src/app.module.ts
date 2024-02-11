@@ -20,6 +20,7 @@ import { PhysycalConditionsObservationsModule } from './modules/physycal-conditi
 import { ServiceService } from './modules/detail-procedures-performed/service/service.service';
 import { DetailProceduresPerformedModule } from './modules/detail-procedures-performed/detail-procedures-performed.module';
 import { OdontogramaModule } from './modules/odontograma/odontograma.module';
+import { ProceduresModule } from './modules/procedures/procedures.module';
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { OdontogramaModule } from './modules/odontograma/odontograma.module';
     PhysycalConditionsObservationsModule,
     DetailProceduresPerformedModule,
     OdontogramaModule,
+    ProceduresModule,
   ],
   controllers: [AppController],
   providers: [AppService, EmailService, ServiceService],

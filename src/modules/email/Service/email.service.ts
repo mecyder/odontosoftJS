@@ -11,6 +11,7 @@ export class EmailService {
       return this._instance;
     }
     this._instance = new EmailService();
+    return this._instance;
   }
   send = async (data: string, to: string, subject: string) => {
     const transport = nodemailer.createTransport({
@@ -29,11 +30,11 @@ export class EmailService {
     // send the message and get a callback with an error or details of the message that was sent
     await transport.sendMail(
       {
-        from: 'subdirectoradjunto@gmail.com', // sender address
+        from: 'CONSULTORIO DENTAL DRA.POLANCO', // sender address
         to, // list of receivers
         subject, // Subject line
-        text: `${{ data }}`, // plain text body
-        // html: `<b>${{ data }}</b>`, // html body
+        // text: `${{ dataSend }}`, // plain text body
+        html: data, // html body
       },
       (err, info) => {
         if (err) {

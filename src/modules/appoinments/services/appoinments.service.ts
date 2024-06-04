@@ -10,7 +10,7 @@ import { CompanyService } from 'src/modules/company/services/company.service';
 import { DoctorService } from 'src/modules/doctor/service/service.service';
 import { UPDATE_TYPE } from '../enums/update.enum';
 import { EmailService } from 'src/modules/email/Service/email.service';
-
+import { TemplateService } from 'src/modules/templates/services/service';
 @Injectable()
 export class AppoinmentsService {
   constructor(
@@ -20,18 +20,19 @@ export class AppoinmentsService {
     private readonly companyService: CompanyService,
     private readonly doctorService: DoctorService,
     private readonly emailService: EmailService,
+    private readonly templateService: TemplateService,
   ) { }
   async add(appoimentDto: IADD, companyId: number, createBy: number) {
     const response: IResponse<any> = { success: false };
     try {
       if (!appoimentDto) {
-        response.errors = [
+        return (response.errors = [
           {
             code: 400,
             message: 'debes complatar los campos',
             razon: 'modelo invalido',
           },
-        ];
+        ]);
       }
       if (!appoimentDto.clientId) {
         response.errors = [
@@ -41,6 +42,7 @@ export class AppoinmentsService {
             razon: 'modelo invalido, falta el cliente para reservar cita',
           },
         ];
+        return response;
       }
       const CLIENT = await this.clientService.findById(
         appoimentDto.clientId,
@@ -97,13 +99,25 @@ export class AppoinmentsService {
         response.success = true;
         response.data = CREATED;
         response.total = 1;
-        await this.emailService
-          .getInstance()
-          .send(
-            'Nueva Cita Creada',
-            'subdirectoradjunto@gmail.com',
-            'prueba de nueva cita creada',
+        const template = await this.templateService.findByName(
+          'appoinment_new',
+          3,
+        );
+
+        if (template) {
+          const templateModify = template.data.contenido
+            .replace('{{@Nombre}}', CREATED.client.name)
+            .replace('{{@Fecha}}', appoimentDto.date.toString())
+            .replace('{{@Hora}}', CREATED.startTime)
+            .replace('{{@doctorNombre}}', CREATED.doctor.name);
+
+          const emailService = this.emailService.getInstance();
+          await emailService.send(
+            templateModify,
+            CREATED.client.email,
+            'Nueva cita creada',
           );
+        } else console.warn('template no encontrado');
       }
     } catch (error) {
       throw new Error(error.message);
@@ -161,7 +175,17 @@ export class AppoinmentsService {
     doctorId: number,
   ): Promise<IResponse<Appointment[]>> {
     const response: IResponse<Appointment[]> = { success: false, data: null };
-
+    if (doctorId === 0) {
+      response.data = [];
+      response.errors = [
+        {
+          message: 'debes enviar el id del doctor',
+          code: 400,
+          razon: 'el campo id del doctor esta vacio',
+        },
+      ];
+      return response;
+    }
     try {
       const APPOINMENTS = await this.appoinmentRepository.find({
         relations: [

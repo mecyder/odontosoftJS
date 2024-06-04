@@ -21,6 +21,8 @@ import { ServiceService } from './modules/detail-procedures-performed/service/se
 import { DetailProceduresPerformedModule } from './modules/detail-procedures-performed/detail-procedures-performed.module';
 import { OdontogramaModule } from './modules/odontograma/odontograma.module';
 import { ProceduresModule } from './modules/procedures/procedures.module';
+import { ServicesService } from './modules/services/services.service';
+import { FilesModule } from './modules/files/files.module';
 
 @Module({
   imports: [
@@ -41,8 +43,9 @@ import { ProceduresModule } from './modules/procedures/procedures.module';
     DetailProceduresPerformedModule,
     OdontogramaModule,
     ProceduresModule,
+    FilesModule,
   ],
   controllers: [AppController],
-  providers: [AppService, EmailService, ServiceService],
+  providers: [AppService, EmailService, ServiceService, ServicesService],
 })
 export class AppModule { }

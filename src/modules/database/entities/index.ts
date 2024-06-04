@@ -21,3 +21,4 @@ export { Procedures_Materials } from './procedures-mateirials.entity';
 export { Materials } from './materials.entity';
 export { MaterialsCategories } from './materials_categories.entity';
 export { Providers } from './providers.entity';
+export { Files } from './files.entity';

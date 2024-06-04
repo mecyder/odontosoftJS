@@ -23,7 +23,7 @@ export class CustomBaseEntity {
   modifyAt: Date;
 
   @Column({ type: 'varchar', nullable: true })
-  modifyBy: string;
+  modifyBy: number;
 
   @Column({ type: 'boolean', default: true })
   status: boolean;

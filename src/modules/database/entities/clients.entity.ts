@@ -17,6 +17,7 @@ import { VitalSings } from './vital.signs.entity';
 import { PhysicalExam } from './physical.exams.entity';
 import { PhysicalConditionObservations } from './physical.conditions.observations.entity';
 import { Odontograma } from './odontograma.entity';
+import { Files } from './files.entity';
 
 @Entity()
 export class Clients extends CustomBaseEntity {
@@ -124,4 +125,9 @@ export class Clients extends CustomBaseEntity {
     nullable: true,
   })
   odontograma: Odontograma[];
+
+  @OneToMany(() => Files, (files) => files.client, {
+    nullable: true,
+  })
+  files: Files[];
 }

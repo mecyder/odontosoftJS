@@ -7,6 +7,7 @@ import { ClientsModule } from '../clients/clients.module';
 import { CompanyModule } from '../company/company.module';
 import { DoctorModule } from '../doctor/doctor.module';
 import { EmailModule } from '../email/email.module';
+import { TemplatesModule } from '../templates/templates.module';
 @Module({
   imports: [
     DatabaseModule,
@@ -14,6 +15,7 @@ import { EmailModule } from '../email/email.module';
     CompanyModule,
     DoctorModule,
     EmailModule,
+    TemplatesModule,
   ],
   providers: [...appointmentsProviders, AppoinmentsService],
   controllers: [AppoinmentController],

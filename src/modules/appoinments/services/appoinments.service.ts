@@ -161,7 +161,7 @@ export class AppoinmentsService {
         where: {
           company: { id: companyId, status: true },
           appointmentStatus: 0,
-          start: Raw((start) => `${start} > NOW()`),
+          start: Raw((start) => `${start} = NOW()`),
         },
       });
       response.data = APPOINMENTS;

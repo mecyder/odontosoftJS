@@ -1,6 +1,6 @@
 import { Injectable, Inject, HttpStatus, HttpCode } from '@nestjs/common';
 import { Appointment } from 'src/modules/database/entities';
-import { getConnection, LessThan, Repository } from 'typeorm';
+import { LessThan, Repository } from 'typeorm';
 import { IADD, IList } from '../dtos';
 import { IResponse } from 'src/shared/interfaces/response';
 import * as moment from 'moment';
@@ -144,8 +144,6 @@ export class AppoinmentsService {
     const response: IResponse<Appointment[]> = { success: false, data: null };
 
     try {
-      const CONNECTION = getConnection();
-      await CONNECTION.query("set timezone='America/Santo_Domingo'");
       const APPOINMENTS = await this.appoinmentRepository.find({
         relations: [
           'client',
@@ -222,8 +220,6 @@ export class AppoinmentsService {
     const response: IResponse<Appointment> = { success: false, data: null };
 
     try {
-      const CONNECTION = getConnection();
-      await CONNECTION.query("set timezone='America/Santo_Domingo'");
       const APPOINMENT = await this.appoinmentRepository.findOne({
         where: { id: id },
         relations: [

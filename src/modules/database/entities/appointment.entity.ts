@@ -11,9 +11,9 @@ export class Appointment extends CustomBaseEntity {
   title: string;
   @Column({ length: 300 })
   reason: string;
-  @Column({ type: 'date' })
+  @Column({ type: 'timestamptz', nullable: true })
   start: Date;
-  @Column({ type: 'date' })
+  @Column({ type: 'timestamptz', nullable: true })
   end: Date;
   @Column({ type: 'varchar' })
   startTime: string;

@@ -158,7 +158,7 @@ export class AppoinmentsService {
         where: {
           company: { id: companyId, status: true },
           appointmentStatus: 0,
-          start: new Date(),
+          start: new Date(new Date().toISOString().slice(0, 10)),
         },
       });
       response.data = APPOINMENTS;

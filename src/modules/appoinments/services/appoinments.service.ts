@@ -144,6 +144,9 @@ export class AppoinmentsService {
     const response: IResponse<Appointment[]> = { success: false, data: null };
 
     try {
+      await this.appoinmentRepository.createQueryBuilder(
+        `SET TimeZone = 'America/Santo_Domingo'`,
+      );
       const APPOINMENTS = await this.appoinmentRepository.find({
         relations: [
           'client',
@@ -158,7 +161,7 @@ export class AppoinmentsService {
         where: {
           company: { id: companyId, status: true },
           appointmentStatus: 0,
-          start: new Date(new Date().toISOString().slice(0, 10)),
+          start: new Date(),
         },
       });
       response.data = APPOINMENTS;

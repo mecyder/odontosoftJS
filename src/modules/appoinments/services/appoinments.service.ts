@@ -1,6 +1,6 @@
 import { Injectable, Inject, HttpStatus, HttpCode } from '@nestjs/common';
 import { Appointment } from 'src/modules/database/entities';
-import { LessThan, Repository } from 'typeorm';
+import { LessThan, Raw, Repository } from 'typeorm';
 import { IADD, IList } from '../dtos';
 import { IResponse } from 'src/shared/interfaces/response';
 import * as moment from 'moment';
@@ -161,7 +161,7 @@ export class AppoinmentsService {
         where: {
           company: { id: companyId, status: true },
           appointmentStatus: 0,
-          start: new Date(),
+          start: Raw((start) => `${start} > NOW()`),
         },
       });
       response.data = APPOINMENTS;

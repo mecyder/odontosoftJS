@@ -23,7 +23,7 @@ export class AppoinmentsService {
     private readonly doctorService: DoctorService,
     private readonly emailService: EmailService,
     private readonly templateService: TemplateService,
-  ) {}
+  ) { }
   async add(appoimentDto: IADD, companyId: number, createBy: number) {
     const response: IResponse<any> = { success: false };
     try {
@@ -255,26 +255,47 @@ export class AppoinmentsService {
       return response;
     }
     try {
-      const APPOINMENTS = await this.appoinmentRepository.find({
-        relations: [
-          'client',
-          'doctor',
-          'client.personalBackground',
-          'client.ailments',
-          'client.ailments.ailmentsAlerts',
-          'client.vital_sings',
-          'client.physicalExam',
+      const APPOINMENTS = await this.appoinmentRepository
+        .createQueryBuilder('appointment')
+        .leftJoinAndSelect('appointment.client', 'client')
+        .leftJoinAndSelect('appointment.doctor', 'doctor')
+        .leftJoinAndSelect('client.personalBackground', 'personalBackground')
+        .leftJoinAndSelect('client.ailments', 'ailments')
+        .leftJoinAndSelect('ailments.ailmentsAlerts', 'ailmentsAlerts')
+        .leftJoinAndSelect('client.vital_sings', 'vital_sings')
+        .leftJoinAndSelect('client.physicalExam', 'physicalExam')
+        .leftJoinAndSelect(
           'client.physicalConditionObservations',
-        ],
-        where: {
-          company: { id: companyId, status: true },
-          appointmentStatus: 1,
-          start: Between(startOfDay, endOfDay),
-          doctor: {
-            id: doctorId,
-          },
-        },
-      });
+          'physicalConditionObservations',
+        )
+        .where('appointment.company = :companyId', { companyId: companyId })
+        .andWhere('appointment.appointmentStatus = :status', {
+          status: appoimentsStatus.Espera,
+        })
+        .andWhere('appointment.start = current_date')
+        .andWhere('doctor.id=:doctorId', { doctorId: doctorId })
+        .getMany();
+
+      // const APPOINMENTS = await this.appoinmentRepository.find({
+      //   relations: [
+      //     'client',
+      //     'doctor',
+      //     'client.personalBackground',
+      //     'client.ailments',
+      //     'client.ailments.ailmentsAlerts',
+      //     'client.vital_sings',
+      //     'client.physicalExam',
+      //     'client.physicalConditionObservations',
+      //   ],
+      //   where: {
+      //     company: { id: companyId, status: true },
+      //     appointmentStatus: 1,
+      //     start: new Date(),
+      //     doctor: {
+      //       id: doctorId,
+      //     },
+      //   },
+      // });
       response.data = APPOINMENTS;
       response.success = true;
       response.total = APPOINMENTS.length;

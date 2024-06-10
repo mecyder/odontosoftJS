@@ -1,6 +1,6 @@
 import { Injectable, Inject, HttpStatus, HttpCode } from '@nestjs/common';
 import { Appointment } from 'src/modules/database/entities';
-import { LessThan, Raw, Repository } from 'typeorm';
+import { Between, LessThan, Raw, Repository } from 'typeorm';
 import { IADD, IList } from '../dtos';
 import { IResponse } from 'src/shared/interfaces/response';
 import * as moment from 'moment';
@@ -11,6 +11,8 @@ import { DoctorService } from 'src/modules/doctor/service/service.service';
 import { UPDATE_TYPE } from '../enums/update.enum';
 import { EmailService } from 'src/modules/email/Service/email.service';
 import { TemplateService } from 'src/modules/templates/services/service';
+import { LessThanOrEqual, MoreThanOrEqual } from 'typeorm';
+
 @Injectable()
 export class AppoinmentsService {
   constructor(
@@ -147,6 +149,25 @@ export class AppoinmentsService {
       await this.appoinmentRepository.createQueryBuilder(
         `SET TimeZone = 'America/Santo_Domingo'`,
       );
+
+      const today = new Date();
+      const startOfDay = new Date(
+        today.getFullYear(),
+        today.getMonth(),
+        today.getDate(),
+        0,
+        0,
+        0,
+      ); // Primer momento del día
+      const endOfDay = new Date(
+        today.getFullYear(),
+        today.getMonth(),
+        today.getDate(),
+        23,
+        59,
+        59,
+      ); // Último momento del día
+
       const APPOINMENTS = await this.appoinmentRepository.find({
         relations: [
           'client',
@@ -160,10 +181,11 @@ export class AppoinmentsService {
         ],
         where: {
           company: { id: companyId, status: true },
-          appointmentStatus: 0,
-          start: Raw((start) => `${start} = NOW()`),
+          appointmentStatus: appoimentsStatus.Reservada,
+          start: Between(startOfDay, endOfDay),
         },
       });
+
       response.data = APPOINMENTS;
       response.success = true;
       response.total = APPOINMENTS.length;
@@ -178,6 +200,23 @@ export class AppoinmentsService {
     doctorId: number,
   ): Promise<IResponse<Appointment[]>> {
     const response: IResponse<Appointment[]> = { success: false, data: null };
+    const today = new Date();
+    const startOfDay = new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      today.getDate(),
+      0,
+      0,
+      0,
+    ); // Primer momento del día
+    const endOfDay = new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      today.getDate(),
+      23,
+      59,
+      59,
+    ); // Último momento del día
     if (doctorId === 0) {
       response.data = [];
       response.errors = [
@@ -204,7 +243,7 @@ export class AppoinmentsService {
         where: {
           company: { id: companyId, status: true },
           appointmentStatus: 1,
-          start: new Date(),
+          start: Between(startOfDay, endOfDay),
           doctor: {
             id: doctorId,
           },

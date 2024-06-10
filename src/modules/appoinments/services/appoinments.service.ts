@@ -23,7 +23,7 @@ export class AppoinmentsService {
     private readonly doctorService: DoctorService,
     private readonly emailService: EmailService,
     private readonly templateService: TemplateService,
-  ) { }
+  ) {}
   async add(appoimentDto: IADD, companyId: number, createBy: number) {
     const response: IResponse<any> = { success: false };
     try {
@@ -188,14 +188,29 @@ export class AppoinmentsService {
       //   where: {
       //     company: { id: companyId, status: true },
       //     appointmentStatus: appoimentsStatus.Reservada,
-      //     start: Between(startOfDay, endOfDay),
+      //     start: new Date(),
       //   },
       // });
 
-      const APPOINMENTS = await this.appoinmentRepository.query(
-        'SELECT * FROM sp_get_all_appointments($1)',
-        [companyId],
-      );
+      const APPOINMENTS = await this.appoinmentRepository
+        .createQueryBuilder('appointment')
+        .leftJoinAndSelect('appointment.client', 'client')
+        .leftJoinAndSelect('appointment.doctor', 'doctor')
+        .leftJoinAndSelect('client.personalBackground', 'personalBackground')
+        .leftJoinAndSelect('client.ailments', 'ailments')
+        .leftJoinAndSelect('ailments.ailmentsAlerts', 'ailmentsAlerts')
+        .leftJoinAndSelect('client.vital_sings', 'vital_sings')
+        .leftJoinAndSelect('client.physicalExam', 'physicalExam')
+        .leftJoinAndSelect(
+          'client.physicalConditionObservations',
+          'physicalConditionObservations',
+        )
+        .where('appointment.company = :companyId', { companyId: companyId })
+        .andWhere('appointment.appointmentStatus = :status', {
+          status: appoimentsStatus.Reservada,
+        })
+        .andWhere('appointment.start = current_date')
+        .getMany();
 
       response.data = APPOINMENTS;
       response.success = true;

@@ -144,7 +144,9 @@ export class AppoinmentsService {
 
   async findAll(companyId: number): Promise<IResponse<Appointment[]>> {
     const response: IResponse<Appointment[]> = { success: false, data: null };
-
+    console.log('iniciando consulta findAll en AppoinmentService', {
+      companyId,
+    });
     try {
       await this.appoinmentRepository.createQueryBuilder(
         `SET TimeZone = 'America/Santo_Domingo'`,
@@ -167,24 +169,33 @@ export class AppoinmentsService {
         59,
         59,
       ); // Último momento del día
-
-      const APPOINMENTS = await this.appoinmentRepository.find({
-        relations: [
-          'client',
-          'doctor',
-          'client.personalBackground',
-          'client.ailments',
-          'client.ailments.ailmentsAlerts',
-          'client.vital_sings',
-          'client.physicalExam',
-          'client.physicalConditionObservations',
-        ],
-        where: {
-          company: { id: companyId, status: true },
-          appointmentStatus: appoimentsStatus.Reservada,
-          start: Between(startOfDay, endOfDay),
-        },
+      console.log('fecha', {
+        today,
+        startOfDay,
+        endOfDay,
       });
+      // const APPOINMENTS = await this.appoinmentRepository.find({
+      //   relations: [
+      //     'client',
+      //     'doctor',
+      //     'client.personalBackground',
+      //     'client.ailments',
+      //     'client.ailments.ailmentsAlerts',
+      //     'client.vital_sings',
+      //     'client.physicalExam',
+      //     'client.physicalConditionObservations',
+      //   ],
+      //   where: {
+      //     company: { id: companyId, status: true },
+      //     appointmentStatus: appoimentsStatus.Reservada,
+      //     start: Between(startOfDay, endOfDay),
+      //   },
+      // });
+
+      const APPOINMENTS = await this.appoinmentRepository.query(
+        'SELECT * FROM sp_get_all_appointments($1)',
+        [companyId],
+      );
 
       response.data = APPOINMENTS;
       response.success = true;

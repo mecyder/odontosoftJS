@@ -81,13 +81,13 @@ export class AppoinmentsService {
         client: CLIENT.data,
         createBy: createBy,
         createAt: moment(Date.now()).toDate(),
-        end: appoimentDto.date,
+        end: moment(appoimentDto.date).format('YYYY-MM-DDTHH:mm:ssZZ'),
         endTime: moment(appoimentDto.hour, 'hh:mm A')
           .add(duration)
           .format('hh:mm A'),
         reason: appoimentDto.reason,
         status: true,
-        start: appoimentDto.date,
+        start: moment(appoimentDto.date).format('YYYY-MM-DDTHH:mm:ssZZ'),
         title: `${CLIENT.data.name}`,
         startTime: moment(appoimentDto.hour, 'hh:mm A').format('hh:mm A'),
         doctor: DOCTOR.data,
@@ -144,54 +144,31 @@ export class AppoinmentsService {
 
   async findAll(companyId: number): Promise<IResponse<Appointment[]>> {
     const response: IResponse<Appointment[]> = { success: false, data: null };
+    const today = new Date();
+    const startOfDay = new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      today.getDate(),
+      0,
+      0,
+      0,
+    ); // Primer momento del día
+    const endOfDay = new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      today.getDate(),
+      23,
+      59,
+      59,
+    );
     console.log('iniciando consulta findAll en AppoinmentService', {
       companyId,
     });
+    console.log(`fecha ${moment(moment(), 'yyyy-mm-dd').toDate()}`);
     try {
       await this.appoinmentRepository.createQueryBuilder(
         `SET TimeZone = 'America/Santo_Domingo'`,
       );
-
-      const today = new Date();
-      const startOfDay = new Date(
-        today.getFullYear(),
-        today.getMonth(),
-        today.getDate(),
-        0,
-        0,
-        0,
-      ); // Primer momento del día
-      const endOfDay = new Date(
-        today.getFullYear(),
-        today.getMonth(),
-        today.getDate(),
-        23,
-        59,
-        59,
-      ); // Último momento del día
-      console.log('fecha', {
-        today,
-        startOfDay,
-        endOfDay,
-      });
-      // const APPOINMENTS = await this.appoinmentRepository.find({
-      //   relations: [
-      //     'client',
-      //     'doctor',
-      //     'client.personalBackground',
-      //     'client.ailments',
-      //     'client.ailments.ailmentsAlerts',
-      //     'client.vital_sings',
-      //     'client.physicalExam',
-      //     'client.physicalConditionObservations',
-      //   ],
-      //   where: {
-      //     company: { id: companyId, status: true },
-      //     appointmentStatus: appoimentsStatus.Reservada,
-      //     start: new Date(),
-      //   },
-      // });
-
       const APPOINMENTS = await this.appoinmentRepository
         .createQueryBuilder('appointment')
         .leftJoinAndSelect('appointment.client', 'client')
@@ -209,7 +186,9 @@ export class AppoinmentsService {
         .andWhere('appointment.appointmentStatus = :status', {
           status: appoimentsStatus.Reservada,
         })
-        .andWhere('appointment.start = current_date')
+        .andWhere('appointment.start = :date', {
+          date: startOfDay.toISOString(),
+        })
         .getMany();
 
       response.data = APPOINMENTS;
@@ -272,7 +251,9 @@ export class AppoinmentsService {
         .andWhere('appointment.appointmentStatus = :status', {
           status: appoimentsStatus.Espera,
         })
-        .andWhere('appointment.start = current_date')
+        .andWhere('appointment.start = :date', {
+          date: startOfDay.toISOString(),
+        })
         .andWhere('doctor.id=:doctorId', { doctorId: doctorId })
         .getMany();
 

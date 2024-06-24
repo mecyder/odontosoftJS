@@ -23,6 +23,7 @@ import { OdontogramaModule } from './modules/odontograma/odontograma.module';
 import { ProceduresModule } from './modules/procedures/procedures.module';
 import { ServicesService } from './modules/services/services.service';
 import { FilesModule } from './modules/files/files.module';
+import { PrintService } from './modules/print/services/print.service';
 
 @Module({
   imports: [
@@ -46,6 +47,12 @@ import { FilesModule } from './modules/files/files.module';
     FilesModule,
   ],
   controllers: [AppController],
-  providers: [AppService, EmailService, ServiceService, ServicesService],
+  providers: [
+    AppService,
+    EmailService,
+    ServiceService,
+    ServicesService,
+    PrintService,
+  ],
 })
-export class AppModule { }
+export class AppModule {}

@@ -1,4 +1,4 @@
 export const jwtConstants = {
   secret:
-    'hola mundo',
+    'E5Mlhiaf0pNqcLYBI5egvxh/LG1chUZBRAYh02oWjoZVgsS/onlvhoTTsBUFlejXmjQjhTRWjKisCWRrvCNUhStoFyDOM1En7kOMVLSzNq+GvKJeJy5t8yCyKQNggrjTTrXff5YXFsP8MRkGb34NS75HrscLzW1G6yS1vP+9onI5Hsp51QOdGhxyYIKkUBrcWvHSJtOqaae+sL3rHsWUibtbqJ5YDuLbx6GrWin+xCUEbaKSb7HhgeiVzZP5nl6GH5w0xN8RFU3gJCuWuk0V9eyrXlcNZKkZ93/LpaxPqfps4zDRL6IapSp4JBmf3HuL54qw2wCJ/XMTSqlhio++OA==',
 };

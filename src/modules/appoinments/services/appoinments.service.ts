@@ -1,7 +1,7 @@
-import { Injectable, Inject, HttpStatus, HttpCode } from '@nestjs/common';
+import { Injectable, Inject, HttpStatus } from '@nestjs/common';
 import { Appointment } from 'src/modules/database/entities';
-import { Between, LessThan, Raw, Repository } from 'typeorm';
-import { IADD, IList } from '../dtos';
+import { Repository } from 'typeorm';
+import { IADD } from '../dtos';
 import { IResponse } from 'src/shared/interfaces/response';
 import * as moment from 'moment';
 import { ClientsService } from 'src/modules/clients/services/clients.service';
@@ -11,7 +11,6 @@ import { DoctorService } from 'src/modules/doctor/service/service.service';
 import { UPDATE_TYPE } from '../enums/update.enum';
 import { EmailService } from 'src/modules/email/Service/email.service';
 import { TemplateService } from 'src/modules/templates/services/service';
-import { LessThanOrEqual, MoreThanOrEqual } from 'typeorm';
 
 @Injectable()
 export class AppoinmentsService {
@@ -152,14 +151,6 @@ export class AppoinmentsService {
       0,
       0,
       0,
-    ); // Primer momento del día
-    const endOfDay = new Date(
-      today.getFullYear(),
-      today.getMonth(),
-      today.getDate(),
-      23,
-      59,
-      59,
     );
     console.log('iniciando consulta findAll en AppoinmentService', {
       companyId,
@@ -213,15 +204,8 @@ export class AppoinmentsService {
       0,
       0,
       0,
-    ); // Primer momento del día
-    const endOfDay = new Date(
-      today.getFullYear(),
-      today.getMonth(),
-      today.getDate(),
-      23,
-      59,
-      59,
-    ); // Último momento del día
+    );
+
     if (doctorId === 0) {
       response.data = [];
       response.errors = [
@@ -256,27 +240,6 @@ export class AppoinmentsService {
         })
         .andWhere('doctor.id=:doctorId', { doctorId: doctorId })
         .getMany();
-
-      // const APPOINMENTS = await this.appoinmentRepository.find({
-      //   relations: [
-      //     'client',
-      //     'doctor',
-      //     'client.personalBackground',
-      //     'client.ailments',
-      //     'client.ailments.ailmentsAlerts',
-      //     'client.vital_sings',
-      //     'client.physicalExam',
-      //     'client.physicalConditionObservations',
-      //   ],
-      //   where: {
-      //     company: { id: companyId, status: true },
-      //     appointmentStatus: 1,
-      //     start: new Date(),
-      //     doctor: {
-      //       id: doctorId,
-      //     },
-      //   },
-      // });
       response.data = APPOINMENTS;
       response.success = true;
       response.total = APPOINMENTS.length;

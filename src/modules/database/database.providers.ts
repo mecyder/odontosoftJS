@@ -14,7 +14,7 @@ export const databaseProviders = [
         password: configService.get<string>('POSTGRES_PASSWORD') ?? 'postgres',
         database: configService.get<string>('POSTGRES_DB') ?? 'odontosoftDBF',
         entities: [__dirname + '/../**/*.entity{.ts,.js}'],
-        logging: true,
+        logging: false,
         synchronize: configService.get<boolean>('SYNCHONIZE') ?? false,
       });
 

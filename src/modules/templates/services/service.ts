@@ -10,7 +10,7 @@ export class TemplateService {
   constructor(
     @Inject('TEMPLATE_REPOSITORY')
     private templateRepository: Repository<Template>,
-  ) {}
+  ) { }
 
   async find(companyId: number) {
     const response: IResponse<IList[]> = { success: false, data: [] };
@@ -102,12 +102,12 @@ export class TemplateService {
 
     return response;
   }
-  async Update(templateId: number, companyId: number, newContent: string) {
+  async update(templateId: number, companyId: number, newContent: string) {
     const response: IResponse<number> = { success: false };
     const resultTemplate = await this.templateRepository.findOne({
       where: { companyId, status: true, id: templateId },
     });
-    if (resultTemplate) {
+    if (!resultTemplate) {
       response.errors = [
         {
           code: 0,
@@ -130,7 +130,34 @@ export class TemplateService {
 
     return response;
   }
+  async disable(templateId: number, companyId: number) {
+    const response: IResponse<number> = { success: false };
+    const resultTemplate = await this.templateRepository.findOne({
+      where: { companyId, status: true, id: templateId },
+    });
+    if (!resultTemplate) {
+      response.errors = [
+        {
+          code: 0,
+          message: 'Plantilla no encontrada',
+          razon: 'Plantilla no encontrada',
+        },
+      ];
+      return response;
+    }
+    resultTemplate.status = false;
+    const UPDATED = await this.templateRepository.update(
+      templateId,
+      resultTemplate,
+    );
 
+    response.data = UPDATED.affected;
+    response.success = UPDATED.affected > 0;
+    response.total = 1;
+    response.success = true;
+
+    return response;
+  }
   async add(companyId: number, template: IAdd) {
     const response: IResponse<Template> = {
       success: false,

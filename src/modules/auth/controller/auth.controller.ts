@@ -14,7 +14,7 @@ import { LoginDto } from '../dtos/login';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService) { }
 
   @HttpCode(HttpStatus.OK)
   @Post('login')
@@ -22,9 +22,11 @@ export class AuthController {
   signIn(@Body() signInDto: LoginDto) {
     return this.authService.signIn(signInDto);
   }
-
-  @Get('profile')
-  getProfile(@Request() req) {
-    return req.user;
+  @Public()
+  @HttpCode(HttpStatus.OK)
+  @Post('/refresh-token')
+  async refreshToken(@Body('refresh_token') refreshToken: string) {
+    const accessToken = await this.authService.refreshAccessToken(refreshToken);
+    return { access_token: accessToken };
   }
 }

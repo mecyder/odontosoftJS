@@ -7,6 +7,7 @@ import {
   ParseIntPipe,
   Post,
   Put,
+  Query,
 } from '@nestjs/common';
 import { ClientsService } from '../services/clients.service';
 import { IEdit, IAdd } from '../dtos';
@@ -15,8 +16,12 @@ export class ClientsController {
   constructor(private readonly clientsService: ClientsService) { }
 
   @Get()
-  async findAll(@Headers('companyId') companyid: any) {
-    return this.clientsService.findAll(+companyid);
+  async findAll(
+    @Headers('companyId') companyid: any,
+    @Query('page') page: number,
+    @Query('pageSize') limit: number,
+  ) {
+    return this.clientsService.findAll(+companyid, +page, +limit);
   }
   @Get(':id')
   async findById(@Param() params: any, @Headers('companyId') header: any) {

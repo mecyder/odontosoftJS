@@ -1,4 +1,4 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { LoginDto } from 'src/modules/auth/dtos/login';
 import { Rol, User, View } from 'src/modules/database/entities/security';
 import { IResponse } from 'src/shared/interfaces/response';
@@ -8,6 +8,7 @@ import { IADD } from 'src/modules/users/interfaces';
 import { passwordUtils } from 'src/utils/passwordUtils';
 import { CompanyService } from 'src/modules/company/services/company.service';
 import { DoctorService } from 'src/modules/doctor/service/service.service';
+import { RequestPaginationDTO } from 'src/shared/dtos/request.pagination';
 
 @Injectable()
 export class UsersService {
@@ -121,13 +122,20 @@ export class UsersService {
     }
     return response;
   }
-  async findAll(companyId: number): Promise<IResponse<IListUser[]>> {
+  async findAll(
+    companyId: number,
+    paginationData: RequestPaginationDTO,
+  ): Promise<IResponse<IListUser[]>> {
     // eslint-disable-next-line prefer-const
     let response: IResponse<IListUser[]> = { success: false, data: [] };
+    const offset = (paginationData.page - 1) * paginationData.limit;
+
     try {
       const USERS = await this.userRepository.find({
         relations: ['rols', 'rols.view', 'doctor', 'company'],
         where: { company: { id: companyId } },
+        skip: offset,
+        take: paginationData.limit,
       });
 
       USERS.forEach(async (user: User) => {
@@ -179,6 +187,8 @@ export class UsersService {
 
       response.total = USERS.length;
       response.success = true;
+      response.page = paginationData.page;
+      response.pageSize = paginationData.limit;
     } catch (error) {
       response.errors = [
         { code: 1, message: error.message, razon: error.message },

@@ -8,6 +8,7 @@ import { SexEnum } from '../enums/sex';
 import { CompanyService } from 'src/modules/company/services/company.service';
 import { ICompany } from 'src/modules/company/dtos/company.dto';
 import { DoctorService } from 'src/modules/doctor/service/service.service';
+import { RequestPaginationDTO } from 'src/shared/dtos/request.pagination';
 @Injectable()
 export class ClientsService {
   constructor(
@@ -16,17 +17,25 @@ export class ClientsService {
     private readonly doctorService: DoctorService,
   ) { }
 
-  async findAll(companyId: number): Promise<IResponse<Clients[]>> {
+  async findAll(
+    companyId: number,
+    page = 1,
+    limit = 10,
+  ): Promise<IResponse<Clients[]>> {
     const response: IResponse<Clients[]> = { success: false, data: null };
+    const offset = (page - 1) * limit;
 
     try {
-      const CLIENTS = await this.clientRepository.find({
-        where: { status: true, company: { id: companyId } },
+      const [CLIENTS, total] = await this.clientRepository.findAndCount({        where: { status: true, company: { id: companyId } },
         relations: ['personalBackground', 'ailments', 'vital_sings'],
+        skip: page > 0 ? (page - 1) * limit : 0,
+        take: limit,
       });
       response.data = CLIENTS;
       response.success = true;
-      response.total = CLIENTS.length;
+      response.total = total;
+      response.page = page;
+      response.pageSize = limit;
     } catch (error) {
       response.errors = [
         {
@@ -133,6 +142,16 @@ export class ClientsService {
         },
         relations: ['personalBackground', 'ailments', 'vital_sings'],
       });
+      if (!CLIENT) {
+        response.errors = [
+          {
+            code: 404,
+            message: 'Paciente no encontrado',
+            razon: 'Codigo de paciente no encontrado',
+          },
+        ];
+        return response;
+      }
       response.data = CLIENT;
       response.success = true;
       response.total = CLIENT ? 1 : 0;
@@ -143,7 +162,8 @@ export class ClientsService {
           message: 'Hubo un error al momento de consultar el registro',
           razon: error.message,
         },
-      ];    }
+      ];
+    }
     return response;
   }
   async add(

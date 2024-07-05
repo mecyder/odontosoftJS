@@ -25,6 +25,9 @@ export class AppoinmentsService {
   ) { }
   async add(appoimentDto: IADD, companyId: number, createBy: number) {
     const response: IResponse<any> = { success: false };
+    await this.appoinmentRepository.createQueryBuilder(
+      `SET TimeZone = 'America/Santo_Domingo'`,
+    );
     try {
       if (!appoimentDto) {
         return (response.errors = [
@@ -92,6 +95,8 @@ export class AppoinmentsService {
         doctor: DOCTOR.data,
         company,
       };
+      console.log(`payload enviado ${appoimentToCreate}`);
+
       const appoimentCreate = await this.appoinmentRepository.create(
         appoimentToCreate,
       );

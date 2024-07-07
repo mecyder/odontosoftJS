@@ -83,13 +83,13 @@ export class AppoinmentsService {
         client: CLIENT.data,
         createBy: createBy,
         createAt: moment(Date.now()).toDate(),
-        end: moment(appoimentDto.date).format('YYYY-MM-DDTHH:mm:ssZZ'),
+        end: moment(appoimentDto.date).format('YYYY-MM-DDTHH:mm:ss'),
         endTime: moment(appoimentDto.hour, 'hh:mm A')
           .add(duration)
           .format('hh:mm A'),
         reason: appoimentDto.reason,
         status: true,
-        start: moment(appoimentDto.date).format('YYYY-MM-DDTHH:mm:ssZZ'),
+        start: moment(appoimentDto.date).format('YYYY-MM-DDTHH:mm:ss'),
         title: `${CLIENT.data.name}`,
         startTime: moment(appoimentDto.hour, 'hh:mm A').format('hh:mm A'),
         doctor: DOCTOR.data,

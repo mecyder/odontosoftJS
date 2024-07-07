@@ -22,7 +22,7 @@ export class AppoinmentsService {
     private readonly doctorService: DoctorService,
     private readonly emailService: EmailService,
     private readonly templateService: TemplateService,
-  ) { }
+  ) {}
   async add(appoimentDto: IADD, companyId: number, createBy: number) {
     const response: IResponse<any> = { success: false };
     await this.appoinmentRepository.createQueryBuilder(
@@ -148,19 +148,19 @@ export class AppoinmentsService {
 
   async findAll(companyId: number): Promise<IResponse<Appointment[]>> {
     const response: IResponse<Appointment[]> = { success: false, data: null };
-    const today = new Date();
-    const startOfDay = new Date(
-      today.getFullYear(),
-      today.getMonth(),
-      today.getDate(),
-      0,
-      0,
-      0,
-    );
     console.log('iniciando consulta findAll en AppoinmentService', {
       companyId,
     });
-    console.log(`fecha ${moment(moment(), 'yyyy-mm-dd').toDate()}`);
+    const DATE_EVENT_START = new Date();
+    const DATE_FORMATTED = `${DATE_EVENT_START.getFullYear().toString()}-${(
+      DATE_EVENT_START.getMonth() + 1
+    )
+      .toString()
+      .padStart(2, '0')}-${DATE_EVENT_START.getDate()
+      .toString()
+      .padStart(2, '0')}`;
+
+    const startFormatted = `${DATE_FORMATTED}T00:00:00`;
     try {
       await this.appoinmentRepository.createQueryBuilder(
         `SET TimeZone = 'America/Santo_Domingo'`,
@@ -183,7 +183,7 @@ export class AppoinmentsService {
           status: appoimentsStatus.Reservada,
         })
         .andWhere('appointment.start = :date', {
-          date: startOfDay.toISOString(),
+          date: startFormatted,
         })
         .getMany();
 

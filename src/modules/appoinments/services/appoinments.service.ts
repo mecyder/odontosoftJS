@@ -11,6 +11,7 @@ import { DoctorService } from 'src/modules/doctor/service/service.service';
 import { UPDATE_TYPE } from '../enums/update.enum';
 import { EmailService } from 'src/modules/email/Service/email.service';
 import { TemplateService } from 'src/modules/templates/services/service';
+import { startOfWeek, endOfWeek, startOfMonth, endOfMonth } from 'date-fns';
 
 @Injectable()
 export class AppoinmentsService {
@@ -22,7 +23,7 @@ export class AppoinmentsService {
     private readonly doctorService: DoctorService,
     private readonly emailService: EmailService,
     private readonly templateService: TemplateService,
-  ) {}
+  ) { }
   async add(appoimentDto: IADD, companyId: number, createBy: number) {
     const response: IResponse<any> = { success: false };
     await this.appoinmentRepository.createQueryBuilder(
@@ -146,7 +147,10 @@ export class AppoinmentsService {
     return hourEnd;
   }
 
-  async findAll(companyId: number): Promise<IResponse<Appointment[]>> {
+  async findAll(
+    companyId: number,
+    params: any,
+  ): Promise<IResponse<Appointment[]>> {
     const response: IResponse<Appointment[]> = { success: false, data: null };
     console.log('iniciando consulta findAll en AppoinmentService', {
       companyId,
@@ -157,36 +161,97 @@ export class AppoinmentsService {
     )
       .toString()
       .padStart(2, '0')}-${DATE_EVENT_START.getDate()
-      .toString()
-      .padStart(2, '0')}`;
+        .toString()
+        .padStart(2, '0')}`;
 
     const startFormatted = `${DATE_FORMATTED}T00:00:00`;
     try {
       await this.appoinmentRepository.createQueryBuilder(
         `SET TimeZone = 'America/Santo_Domingo'`,
       );
-      const APPOINMENTS = await this.appoinmentRepository
-        .createQueryBuilder('appointment')
-        .leftJoinAndSelect('appointment.client', 'client')
-        .leftJoinAndSelect('appointment.doctor', 'doctor')
-        .leftJoinAndSelect('client.personalBackground', 'personalBackground')
-        .leftJoinAndSelect('client.ailments', 'ailments')
-        .leftJoinAndSelect('ailments.ailmentsAlerts', 'ailmentsAlerts')
-        .leftJoinAndSelect('client.vital_sings', 'vital_sings')
-        .leftJoinAndSelect('client.physicalExam', 'physicalExam')
-        .leftJoinAndSelect(
-          'client.physicalConditionObservations',
-          'physicalConditionObservations',
-        )
-        .where('appointment.company = :companyId', { companyId: companyId })
-        .andWhere('appointment.appointmentStatus = :status', {
-          status: appoimentsStatus.Reservada,
-        })
-        .andWhere('appointment.start = :date', {
-          date: startFormatted,
-        })
-        .getMany();
-
+      let APPOINMENTS: Appointment[] = [];
+      if (params.type === 'day') {
+        APPOINMENTS = await this.appoinmentRepository
+          .createQueryBuilder('appointment')
+          .leftJoinAndSelect('appointment.client', 'client')
+          .leftJoinAndSelect('appointment.doctor', 'doctor')
+          .leftJoinAndSelect('client.personalBackground', 'personalBackground')
+          .leftJoinAndSelect('client.ailments', 'ailments')
+          .leftJoinAndSelect('ailments.ailmentsAlerts', 'ailmentsAlerts')
+          .leftJoinAndSelect('client.vital_sings', 'vital_sings')
+          .leftJoinAndSelect('client.physicalExam', 'physicalExam')
+          .leftJoinAndSelect(
+            'client.physicalConditionObservations',
+            'physicalConditionObservations',
+          )
+          .where('appointment.company = :companyId', { companyId: companyId })
+          .andWhere('appointment.appointmentStatus = :status', {
+            status: appoimentsStatus.Reservada,
+          })
+          .andWhere('appointment.start = :date', {
+            date: startFormatted,
+          })
+          .getMany();
+      }
+      if (params.type === 'week') {
+        const fechaInicio = `${params.fechaInicio}T00:00:00`;
+        const fechaFin = `${params.fechaFin}T00:00:00`;
+        // Obtener el inicio y fin de la semana
+        const startDate = startOfWeek(new Date(fechaInicio));
+        const endDate = endOfWeek(new Date(fechaFin));
+        APPOINMENTS = await this.appoinmentRepository
+          .createQueryBuilder('appointment')
+          .leftJoinAndSelect('appointment.client', 'client')
+          .leftJoinAndSelect('appointment.doctor', 'doctor')
+          .leftJoinAndSelect('client.personalBackground', 'personalBackground')
+          .leftJoinAndSelect('client.ailments', 'ailments')
+          .leftJoinAndSelect('ailments.ailmentsAlerts', 'ailmentsAlerts')
+          .leftJoinAndSelect('client.vital_sings', 'vital_sings')
+          .leftJoinAndSelect('client.physicalExam', 'physicalExam')
+          .leftJoinAndSelect(
+            'client.physicalConditionObservations',
+            'physicalConditionObservations',
+          )
+          .where('appointment.company = :companyId', { companyId: companyId })
+          .andWhere('appointment.appointmentStatus = :status', {
+            status: appoimentsStatus.Reservada,
+          })
+          .andWhere('appointment.start BETWEEN :startDate AND :endDate', {
+            startDate: startDate,
+            endDate: endDate,
+          })
+          .getMany();
+      }
+      if (params.type === 'month') {
+        // Obtener el inicio y fin del mes
+        const fechaInicio = `${params.fechaInicio}T00:00:00`;
+        const fechaFin = `${params.fechaFin}T00:00:00`;
+        // Obtener el inicio y fin de la semana
+        const startDate = startOfMonth(new Date(fechaInicio));
+        const endDate = endOfMonth(new Date(fechaFin));
+        APPOINMENTS = await this.appoinmentRepository
+          .createQueryBuilder('appointment')
+          .leftJoinAndSelect('appointment.client', 'client')
+          .leftJoinAndSelect('appointment.doctor', 'doctor')
+          .leftJoinAndSelect('client.personalBackground', 'personalBackground')
+          .leftJoinAndSelect('client.ailments', 'ailments')
+          .leftJoinAndSelect('ailments.ailmentsAlerts', 'ailmentsAlerts')
+          .leftJoinAndSelect('client.vital_sings', 'vital_sings')
+          .leftJoinAndSelect('client.physicalExam', 'physicalExam')
+          .leftJoinAndSelect(
+            'client.physicalConditionObservations',
+            'physicalConditionObservations',
+          )
+          .where('appointment.company = :companyId', { companyId: companyId })
+          .andWhere('appointment.appointmentStatus = :status', {
+            status: appoimentsStatus.Reservada,
+          })
+          .andWhere('appointment.start BETWEEN :startDate AND :endDate', {
+            startDate: startDate,
+            endDate: endDate,
+          })
+          .getMany();
+      }
       response.data = APPOINMENTS;
       response.success = true;
       response.total = APPOINMENTS.length;

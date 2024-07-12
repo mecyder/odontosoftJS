@@ -7,6 +7,7 @@ import {
   Headers,
   Header,
   Put,
+  Query,
 } from '@nestjs/common';
 import { AppoinmentsService } from '../services/appoinments.service';
 import { IADD } from '../dtos/add';
@@ -25,8 +26,8 @@ export class AppoinmentController {
   }
   @Get()
   @Header('content-type', 'application/json')
-  async findAll(@Headers() headers: any) {
-    return await this.appoinmentService.findAll(+headers.companyid);
+  async findAll(@Headers() headers: any, @Query() params: any) {
+    return await this.appoinmentService.findAll(+headers.companyid, params);
   }
   @Get('findAllByDoctor/:doctorId')
   @Header('content-type', 'application/json')

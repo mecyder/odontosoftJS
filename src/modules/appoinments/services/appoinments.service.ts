@@ -171,6 +171,10 @@ export class AppoinmentsService {
       );
       let APPOINMENTS: Appointment[] = [];
       if (params.type === 'day') {
+        const formattedDate = await this.appoinmentRepository.query(
+          `select to_char(now(), 'YYYY-MM-DD"T00:00:00"')`,
+        );
+
         APPOINMENTS = await this.appoinmentRepository
           .createQueryBuilder('appointment')
           .leftJoinAndSelect('appointment.client', 'client')
@@ -189,7 +193,7 @@ export class AppoinmentsService {
             status: appoimentsStatus.Reservada,
           })
           .andWhere('appointment.start = :date', {
-            date: startFormatted,
+            date: formattedDate[0].to_char,
           })
           .getMany();
       }

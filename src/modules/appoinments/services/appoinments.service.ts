@@ -270,14 +270,8 @@ export class AppoinmentsService {
     doctorId: number,
   ): Promise<IResponse<Appointment[]>> {
     const response: IResponse<Appointment[]> = { success: false, data: null };
-    const today = new Date();
-    const startOfDay = new Date(
-      today.getFullYear(),
-      today.getMonth(),
-      today.getDate(),
-      0,
-      0,
-      0,
+    const formattedDate = await this.appoinmentRepository.query(
+      `select to_char(now(), 'YYYY-MM-DD"T00:00:00"')`,
     );
 
     if (doctorId === 0) {
@@ -310,7 +304,7 @@ export class AppoinmentsService {
           status: appoimentsStatus.Espera,
         })
         .andWhere('appointment.start = :date', {
-          date: startOfDay.toISOString(),
+          date: formattedDate[0].to_char,
         })
         .andWhere('doctor.id=:doctorId', { doctorId: doctorId })
         .getMany();

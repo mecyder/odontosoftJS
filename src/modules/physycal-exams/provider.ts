@@ -1,6 +1,5 @@
 import { DataSource } from 'typeorm';
 import { PhysicalExam } from '../database/entities';
-import { Inject } from '@nestjs/common';
 
 export const physicalExmamsProvider = [
   {

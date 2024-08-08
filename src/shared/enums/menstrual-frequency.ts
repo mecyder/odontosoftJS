@@ -1,4 +1,4 @@
-export enum MensualFrequency {
-  Regular,
-  Irregular,
+export enum MensualFrequencyEnum {
+  Regular = 'Regular',
+  Irregular = 'Irregular',
 }

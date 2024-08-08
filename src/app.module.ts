@@ -24,6 +24,7 @@ import { ProceduresModule } from './modules/procedures/procedures.module';
 import { ServicesService } from './modules/services/services.service';
 import { FilesModule } from './modules/files/files.module';
 import { PrintService } from './modules/print/services/print.service';
+import { PersonalBackgroundModule } from './modules/personal-background/personal-background.module';
 
 @Module({
   imports: [
@@ -45,6 +46,7 @@ import { PrintService } from './modules/print/services/print.service';
     OdontogramaModule,
     ProceduresModule,
     FilesModule,
+    PersonalBackgroundModule,
   ],
   controllers: [AppController],
   providers: [
